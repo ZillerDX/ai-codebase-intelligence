@@ -21,31 +21,52 @@ export class ApiService {
   private storage = inject(BrowserStorageService);
   private baseUrl = 'http://localhost:5080/api/analysis';
 
+  private isLocalBackend(): boolean {
+    if (typeof window === 'undefined') return false;
+    const host = window.location.hostname;
+    return host === 'localhost' || host === '127.0.0.1';
+  }
+
   getSamples(): Observable<CodebaseProject[]> {
+    if (!this.isLocalBackend()) {
+      return of(this.storage.getProjects());
+    }
     return this.http.get<CodebaseProject[]>(`${this.baseUrl}/samples`).pipe(
       catchError(() => of(this.storage.getProjects()))
     );
   }
 
   getSummary(projectId: string): Observable<HighLevelSummaryDto> {
+    if (!this.isLocalBackend()) {
+      return of(this.storage.getSummary(projectId));
+    }
     return this.http.get<HighLevelSummaryDto>(`${this.baseUrl}/${projectId}/summary`).pipe(
       catchError(() => of(this.storage.getSummary(projectId)))
     );
   }
 
   getFiles(projectId: string): Observable<string[]> {
+    if (!this.isLocalBackend()) {
+      return of(this.storage.getFiles(projectId));
+    }
     return this.http.get<string[]>(`${this.baseUrl}/${projectId}/files`).pipe(
       catchError(() => of(this.storage.getFiles(projectId)))
     );
   }
 
   getArchitecture(projectId: string): Observable<ArchitectureOverviewDto> {
+    if (!this.isLocalBackend()) {
+      return of(this.storage.getArchitecture(projectId));
+    }
     return this.http.get<ArchitectureOverviewDto>(`${this.baseUrl}/${projectId}/architecture`).pipe(
       catchError(() => of(this.storage.getArchitecture(projectId)))
     );
   }
 
   analyzeImpact(projectId: string, targetFile: string, proposedChange: string): Observable<ImpactAnalysisResult> {
+    if (!this.isLocalBackend()) {
+      return of(this.synthesizeOfflineImpact(targetFile, proposedChange));
+    }
     return this.http.post<ImpactAnalysisResult>(`${this.baseUrl}/${projectId}/impact`, {
       projectId,
       targetFile,
@@ -56,18 +77,27 @@ export class ApiService {
   }
 
   getSecuritySmells(projectId: string): Observable<SecuritySmellReportDto> {
+    if (!this.isLocalBackend()) {
+      return of(this.storage.getSecuritySmells(projectId));
+    }
     return this.http.get<SecuritySmellReportDto>(`${this.baseUrl}/${projectId}/security-smells`).pipe(
       catchError(() => of(this.storage.getSecuritySmells(projectId)))
     );
   }
 
   getDocumentation(projectId: string): Observable<DocumentationReportDto> {
+    if (!this.isLocalBackend()) {
+      return of(this.storage.getDocumentation(projectId));
+    }
     return this.http.get<DocumentationReportDto>(`${this.baseUrl}/${projectId}/docs`).pipe(
       catchError(() => of(this.storage.getDocumentation(projectId)))
     );
   }
 
   getTechnicalDebt(projectId: string): Observable<TechnicalDebtReportDto> {
+    if (!this.isLocalBackend()) {
+      return of(this.storage.getTechnicalDebt(projectId));
+    }
     return this.http.get<TechnicalDebtReportDto>(`${this.baseUrl}/${projectId}/technical-debt`).pipe(
       catchError(() => of(this.storage.getTechnicalDebt(projectId)))
     );
@@ -78,6 +108,9 @@ export class ApiService {
   }
 
   importGitHubRepo(repoUrl: string, personalAccessToken?: string, branch?: string): Observable<CodebaseProject> {
+    if (!this.isLocalBackend()) {
+      return from(this.storage.analyzeGitHubRepositoryClientSide(repoUrl, personalAccessToken, branch));
+    }
     return this.http.post<CodebaseProject>(`${this.baseUrl}/github/import`, {
       repoUrl,
       personalAccessToken,
@@ -88,6 +121,9 @@ export class ApiService {
   }
 
   getPopularTemplates(): Observable<GitHubRepoSuggestion[]> {
+    if (!this.isLocalBackend()) {
+      return of(this.storage.getPopularTemplates());
+    }
     return this.http.get<GitHubRepoSuggestion[]>(`${this.baseUrl}/github/popular-templates`).pipe(
       catchError(() => of(this.storage.getPopularTemplates()))
     );
