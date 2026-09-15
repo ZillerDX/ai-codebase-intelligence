@@ -1,0 +1,15 @@
+# Build results
+bin/
+obj/
+
+# Local configuration and secrets
+appsettings.local.json
+appsettings.*.local.json
+*.local.json
+.env
+.env.local
+
+# IDE
+.vs/
+.vscode/
+.idea/

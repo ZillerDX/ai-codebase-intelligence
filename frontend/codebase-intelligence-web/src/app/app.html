@@ -1,0 +1,1327 @@
+<div class="app-container">
+  <!-- Top Navigation Header (Clean, Professional, Zero-Bloat) -->
+  <header class="top-header">
+    <div class="header-left">
+      <!-- Brand Logo & Badge -->
+      <div class="brand-badge">
+        <div class="brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+            <polyline points="2 17 12 22 22 17"/>
+            <polyline points="2 12 12 17 22 12"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">CodePulse</span>
+        </div>
+      </div>
+
+      <div class="header-divider"></div>
+
+      <!-- Custom Popover Repository Selector (Rule 5.6: No Native Select) -->
+      <div class="custom-repo-dropdown-wrapper">
+        <button class="repo-selector-trigger" (click)="toggleRepoDropdown()" title="Select Repository">
+          <svg class="repo-glyph" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+          <span class="repo-name-text">{{ selectedProject().name || 'Select Repository' }}</span>
+          <span class="repo-branch-pill">main</span>
+          <svg class="chevron-glyph" [class.rotated]="isRepoDropdownOpen()" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+
+        @if (isRepoDropdownOpen()) {
+          <div class="repo-popover-backdrop" (click)="closeRepoDropdown()"></div>
+          <div class="repo-popover-panel">
+            <div class="popover-search-box">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.3-4.3"/>
+              </svg>
+              <input type="text" placeholder="Filter repositories..." [(ngModel)]="repoSearchQuery" (click)="$event.stopPropagation()" />
+            </div>
+            <div class="popover-list">
+              @for (proj of filteredProjects(); track proj.id) {
+                <div class="popover-item" [class.selected]="proj.id === selectedProjectId()" (click)="selectProject(proj)">
+                  <div class="item-left">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                    </svg>
+                    <div class="item-info">
+                      <span class="item-name">{{ proj.name }}</span>
+                      <div class="item-tags">
+                        @for (lang of proj.languages; track lang) {
+                          <span class="lang-tag">{{ lang }}</span>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                  @if (proj.id === selectedProjectId()) {
+                    <svg class="check-glyph" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Vercel-Style GitHub Import Button -->
+      <button class="github-import-btn" (click)="openImportModal()" title="Connect GitHub Repository">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+        <span>Import Git Repository</span>
+      </button>
+    </div>
+
+    <!-- Header Right: Purposeful Interactive Controls Only (Zero Dummy Icons) -->
+    <div class="header-right">
+      <!-- Interactive Timeframe Filter Pills -->
+      <div class="timeframe-selector">
+        <button class="tf-btn" [class.active]="selectedTimeframe() === '7D'" (click)="setTimeframe('7D')">7D</button>
+        <button class="tf-btn" [class.active]="selectedTimeframe() === '30D'" (click)="setTimeframe('30D')">30D</button>
+        <button class="tf-btn" [class.active]="selectedTimeframe() === '90D'" (click)="setTimeframe('90D')">90D</button>
+        <button class="tf-btn" [class.active]="selectedTimeframe() === 'ALL'" (click)="setTimeframe('ALL')">ALL</button>
+      </div>
+
+      <!-- Primary Action: Run AI Deep Scan (With Pulsing Ring) -->
+      <button class="primary-scan-action-btn" (click)="triggerDeepScan()" title="Trigger AI Codebase Deep Scan">
+        <span class="scan-glow-ring"></span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+        <span>Run AI Deep Scan</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Dedicated AI Codebase Deep Scanning Screen (Neural Hologram Overlay) -->
+  @if (isScanningCodebase()) {
+    <div class="ai-scanner-overlay">
+      <div class="ai-scanner-card">
+        <!-- Scanner Top Header -->
+        <div class="scanner-card-header">
+          <div class="scanner-header-left">
+            <div class="cyber-tag">
+              <span class="cyber-pulse-dot"></span>
+              <span>NEURAL AI CODEBASE SCANNER</span>
+            </div>
+            <h2 class="scanner-title">Deep Codebase Diagnostics in Progress</h2>
+            <p class="scanner-meta">
+              Target: <span class="mono-target">{{ selectedProject().name }}</span>
+              <span class="mono-subtag">branch: main</span>
+              <span class="mono-subtag">{{ selectedProject().totalFiles || 1078 }} files</span>
+            </p>
+          </div>
+          <button class="scanner-dismiss-btn" (click)="skipScan()">
+            <span>Skip to Dashboard</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Scanner Central Body -->
+        <div class="scanner-card-body">
+          <!-- Cyber Radar Visualizer -->
+          <div class="scanner-radar-panel">
+            <div class="radar-box">
+              <svg viewBox="0 0 220 220" class="radar-hud-svg">
+                <!-- Concentric Rings -->
+                <circle cx="110" cy="110" r="100" fill="none" stroke="rgba(16, 185, 129, 0.12)" stroke-width="1.2" stroke-dasharray="6 6" class="rotating-ring-outer"/>
+                <circle cx="110" cy="110" r="75" fill="none" stroke="rgba(99, 102, 241, 0.2)" stroke-width="1" class="rotating-ring-mid"/>
+                <circle cx="110" cy="110" r="48" fill="none" stroke="rgba(6, 182, 212, 0.25)" stroke-width="1.5"/>
+                <!-- Axis Crosshairs -->
+                <line x1="110" y1="10" x2="110" y2="210" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1"/>
+                <line x1="10" y1="110" x2="210" y2="110" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1"/>
+                <!-- Sweeping Radar Beam -->
+                <polygon points="110,110 110,10 210,110" fill="url(#radarGradient)" class="radar-sweep-beam"/>
+                <defs>
+                  <linearGradient id="radarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#10b981" stop-opacity="0.45"/>
+                    <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <!-- Central Neural Core -->
+                <circle cx="110" cy="110" r="9" fill="#10b981" class="core-glow"/>
+                <!-- Orbit Nodes (Animated files) -->
+                <circle cx="155" cy="70" r="4.5" fill="#06b6d4" class="orbit-particle p1"/>
+                <circle cx="65" cy="145" r="5" fill="#8b5cf6" class="orbit-particle p2"/>
+                <circle cx="165" cy="140" r="4" fill="#10b981" class="orbit-particle p3"/>
+                <circle cx="55" cy="65" r="4.5" fill="#f59e0b" class="orbit-particle p4"/>
+              </svg>
+              <div class="radar-status-caption">{{ scanStageTitle() }}</div>
+            </div>
+          </div>
+
+          <!-- Diagnostics Telemetry & Stepper -->
+          <div class="scanner-telemetry-panel">
+            <!-- 4-Phase Stepper -->
+            <div class="diagnostic-stepper">
+              <div class="step-card" [class.done]="scanStage() > 1" [class.active]="scanStage() === 1">
+                <div class="step-indicator">
+                  @if (scanStage() > 1) { <span>✓</span> } @else { <span class="step-spinner"></span> }
+                </div>
+                <div class="step-info">
+                  <span class="step-title">Phase 1: Git Ingestion & File Hierarchy</span>
+                  <span class="step-desc">Parsing remote git tree, commit history, and branches</span>
+                </div>
+              </div>
+
+              <div class="step-card" [class.done]="scanStage() > 2" [class.active]="scanStage() === 2">
+                <div class="step-indicator">
+                  @if (scanStage() > 2) { <span>✓</span> } @else if (scanStage() === 2) { <span class="step-spinner"></span> } @else { <span>2</span> }
+                </div>
+                <div class="step-info">
+                  <span class="step-title">Phase 2: AST & Symbol Dependency Graph</span>
+                  <span class="step-desc">Mapping function declarations, imports & cross-boundary calls</span>
+                </div>
+              </div>
+
+              <div class="step-card" [class.done]="scanStage() > 3" [class.active]="scanStage() === 3">
+                <div class="step-indicator">
+                  @if (scanStage() > 3) { <span>✓</span> } @else if (scanStage() === 3) { <span class="step-spinner"></span> } @else { <span>3</span> }
+                </div>
+                <div class="step-info">
+                  <span class="step-title">Phase 3: AI Neural Smells & Blast Radius</span>
+                  <span class="step-desc">Gemini model evaluating architectural debt and regressions</span>
+                </div>
+              </div>
+
+              <div class="step-card" [class.done]="scanStage() >= 4" [class.active]="scanStage() === 4">
+                <div class="step-indicator">
+                  @if (scanStage() >= 4 && scanProgress() === 100) { <span>✓</span> } @else if (scanStage() === 4) { <span class="step-spinner"></span> } @else { <span>4</span> }
+                </div>
+                <div class="step-info">
+                  <span class="step-title">Phase 4: Debt Ledger & ROI Refactor Roadmap</span>
+                  <span class="step-desc">Synthesizing prioritized refactor backlog and sprint targets</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Terminal Stream Box -->
+            <div class="telemetry-terminal-box">
+              <div class="terminal-hud-header">
+                <div class="terminal-lights">
+                  <span class="light red"></span>
+                  <span class="light yellow"></span>
+                  <span class="light green"></span>
+                </div>
+                <span class="terminal-title">telemetry://ai-neural-scanner/stream</span>
+              </div>
+              <div class="terminal-lines">
+                @for (log of scanLogs(); track log) {
+                  <div class="term-log-row">{{ log }}</div>
+                }
+                <div class="term-typing-cursor">_</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scanner Footer: Progress Bar -->
+        <div class="scanner-card-footer">
+          <div class="footer-progress-header">
+            <span class="progress-title">NEURAL ANALYSIS COMPLETION</span>
+            <span class="progress-pct">{{ scanProgress() }}%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" [style.width.%]="scanProgress()"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Navigation Tabs -->
+  <nav class="nav-tabs-bar">
+    <button class="tab-item" [class.active]="activeTab() === 'summary'" (click)="activeTab.set('summary')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect width="18" height="18" x="3" y="3" rx="2"/>
+        <path d="M3 9h18"/>
+        <path d="M9 21V9"/>
+      </svg>
+      <span>High level summary</span>
+    </button>
+
+    <button class="tab-item" [class.active]="activeTab() === 'architecture'" (click)="activeTab.set('architecture')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+        <line x1="12" y1="22.08" x2="12" y2="12"/>
+      </svg>
+      <span>Architecture & Flow</span>
+    </button>
+
+    <button class="tab-item highlight-tab" [class.active]="activeTab() === 'impact'" (click)="activeTab.set('impact')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/>
+      </svg>
+      <span>AI Impact Analysis (Blast Radius)</span>
+    </button>
+
+    <button class="tab-item" [class.active]="activeTab() === 'security'" (click)="activeTab.set('security')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      <span>Code Smells & Security</span>
+    </button>
+
+    <button class="tab-item" [class.active]="activeTab() === 'docs'" (click)="activeTab.set('docs')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+        <polyline points="10 9 9 9 8 9"/>
+      </svg>
+      <span>Auto Documentation</span>
+    </button>
+
+    <button class="tab-item" [class.active]="activeTab() === 'debt'" (click)="activeTab.set('debt')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 14 14"/>
+      </svg>
+      <span>Technical Debt</span>
+    </button>
+  </nav>
+
+  <!-- Main Content Body -->
+  <main class="main-content">
+    
+    <!-- TAB 1: HIGH LEVEL SUMMARY (Exact Match to Image 2) -->
+    @if (activeTab() === 'summary') {
+      <div class="dashboard-grid">
+        
+        <!-- ROW 1: 6 Interactive Top Metric Cards -->
+        <div class="metrics-row">
+          
+          <!-- Card 1: Merged PRs -->
+          <div class="kpi-card interactive-card" [class.active-kpi]="activeKpiCard() === 'prs'" (click)="toggleKpiCard('prs')">
+            <div class="kpi-header">
+              <span class="kpi-label">MERGED PULL REQUESTS</span>
+              <span class="kpi-trend positive">+14.2%</span>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-value animate-count">{{ displayMergedPrs() }}</div>
+              <div class="kpi-subtext">PULL REQUESTS ({{ selectedTimeframe() }})</div>
+            </div>
+            <div class="kpi-sparkline">
+              <svg viewBox="0 0 100 20" class="sparkline-svg">
+                <path d="M0,16 Q25,6 50,11 T100,3" fill="none" stroke="#10b981" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Card 2: Active Users -->
+          <div class="kpi-card interactive-card" [class.active-kpi]="activeKpiCard() === 'users'" (click)="toggleKpiCard('users')">
+            <div class="kpi-header">
+              <span class="kpi-label">ACTIVE USERS</span>
+              <span class="kpi-trend neutral">stable</span>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-value animate-count">{{ displayActiveUsers() }}</div>
+              <div class="kpi-subtext">USERS ACTIVE</div>
+            </div>
+            <div class="kpi-sparkline">
+              <svg viewBox="0 0 100 20" class="sparkline-svg">
+                <path d="M0,12 Q30,15 60,8 T100,10" fill="none" stroke="#06b6d4" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Card 3: Median Time To Last Commit -->
+          <div class="kpi-card interactive-card" [class.active-kpi]="activeKpiCard() === 'time'" (click)="toggleKpiCard('time')">
+            <div class="kpi-header">
+              <span class="kpi-label">MEDIAN TIME TO LAST COMMIT</span>
+              <span class="kpi-trend positive">-18.5%</span>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-value animate-count">{{ displayTimeToCommit() }}</div>
+              <div class="kpi-subtext">HOURS VELOCITY</div>
+            </div>
+            <div class="kpi-sparkline">
+              <svg viewBox="0 0 100 20" class="sparkline-svg">
+                <path d="M0,5 Q40,18 70,8 T100,4" fill="none" stroke="#8b5cf6" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Card 4: Review Time Saved -->
+          <div class="kpi-card interactive-card" [class.active-kpi]="activeKpiCard() === 'saved'" (click)="toggleKpiCard('saved')">
+            <div class="kpi-header">
+              <span class="kpi-label">REVIEW TIME SAVED</span>
+              <span class="kpi-trend positive">+3.4x</span>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-value animate-count">{{ displayReviewSaved() }}</div>
+              <div class="kpi-subtext">ENGINEERING DAYS</div>
+            </div>
+            <div class="kpi-sparkline">
+              <svg viewBox="0 0 100 20" class="sparkline-svg">
+                <path d="M0,18 Q35,8 70,6 T100,2" fill="none" stroke="#10b981" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Card 5: Coderabbit Review Comments (Split Values) -->
+          <div class="kpi-card interactive-card" [class.active-kpi]="activeKpiCard() === 'comments'" (click)="toggleKpiCard('comments')">
+            <div class="kpi-header">
+              <span class="kpi-label">AI REVIEW COMMENTS</span>
+              <span class="kpi-trend positive">48.2% acc</span>
+            </div>
+            <div class="kpi-split-body">
+              <div class="split-col">
+                <div class="kpi-value animate-count">{{ displayCommentsPosted() }}</div>
+                <div class="kpi-subtext">POSTED</div>
+              </div>
+              <div class="split-divider"></div>
+              <div class="split-col">
+                <div class="kpi-value animate-count">{{ displayAcceptedPercent() }}%</div>
+                <div class="kpi-subtext">ACCEPTED</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 6: Avg Review Comments Posted Per PR -->
+          <div class="kpi-card interactive-card" [class.active-kpi]="activeKpiCard() === 'avg'" (click)="toggleKpiCard('avg')">
+            <div class="kpi-header">
+              <span class="kpi-label">AVG COMMENTS / PR</span>
+              <span class="kpi-trend neutral">AI vs Dev</span>
+            </div>
+            <div class="kpi-split-body">
+              <div class="split-col">
+                <div class="kpi-value animate-count">{{ displayAvgAi() }}</div>
+                <div class="kpi-subtext">BY AI</div>
+              </div>
+              <div class="split-divider"></div>
+              <div class="split-col">
+                <div class="kpi-value animate-count">{{ displayAvgHuman() }}</div>
+                <div class="kpi-subtext">BY HUMAN</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ROW 2: Interactive 3-Point Radar + Interactive Donut Chart -->
+        <div class="bento-row-two">
+          
+          <!-- Bento Box: REVIEW COMMENTS BY SEVERITY (Interactive Triangle Radar) -->
+          <div class="bento-card">
+            <div class="bento-card-header">
+              <div class="card-title-group">
+                <span class="bento-card-title">REVIEW COMMENTS BY SEVERITY</span>
+                <span class="card-sub-hint">Hover vertices for telemetry</span>
+              </div>
+              <div class="radar-tag">3-AXIS</div>
+            </div>
+            <div class="chart-container radar-severity-container">
+              <svg viewBox="0 0 300 270" class="radar-svg">
+                <!-- Background Triangles / Grid -->
+                <polygon points="150,40 50,220 250,220" fill="none" stroke="#222b3d" stroke-width="1.2"/>
+                <polygon points="150,85 85,200 215,200" fill="none" stroke="#1c2333" stroke-width="1"/>
+                <polygon points="150,120 115,185 185,185" fill="none" stroke="#161c28" stroke-width="1"/>
+                
+                <!-- Axis Spokes -->
+                <line x1="150" y1="150" x2="150" y2="40" stroke="#222b3d" stroke-width="1"/>
+                <line x1="150" y1="150" x2="50" y2="220" stroke="#222b3d" stroke-width="1"/>
+                <line x1="150" y1="150" x2="250" y2="220" stroke="#222b3d" stroke-width="1"/>
+
+                <!-- Vertex Labels with Interactive Clicks -->
+                <text x="150" y="26" text-anchor="middle" class="radar-label clickable" 
+                      [class.active-label]="focusedSeverity() === 'Critical'"
+                      (click)="setFocusedSeverity(focusedSeverity() === 'Critical' ? 'All' : 'Critical')">
+                  Critical
+                </text>
+                <text x="35" y="235" text-anchor="middle" class="radar-label clickable"
+                      [class.active-label]="focusedSeverity() === 'Major'"
+                      (click)="setFocusedSeverity(focusedSeverity() === 'Major' ? 'All' : 'Major')">
+                  Major
+                </text>
+                <text x="265" y="235" text-anchor="middle" class="radar-label clickable"
+                      [class.active-label]="focusedSeverity() === 'Minor'"
+                      (click)="setFocusedSeverity(focusedSeverity() === 'Minor' ? 'All' : 'Minor')">
+                  Minor
+                </text>
+
+                <!-- Posted Polygon (Indigo Wireframe) -->
+                <polygon [attr.points]="get3PointPolygon('posted')" 
+                         fill="none" 
+                         stroke="#6366f1" 
+                         stroke-width="2.5" 
+                         stroke-linejoin="round"
+                         class="radar-poly posted-poly"/>
+
+                <!-- Accepted Polygon (Mint Teal Glow & Fill) -->
+                <polygon [attr.points]="get3PointPolygon('accepted')" 
+                         fill="#10b981" 
+                         fill-opacity="0.3" 
+                         stroke="#10b981" 
+                         stroke-width="2.5" 
+                         stroke-linejoin="round"
+                         class="radar-poly accepted-poly"/>
+              </svg>
+
+              <!-- Radar Legend with Interactive Filters -->
+              <div class="chart-legend">
+                <div class="legend-item interactive-legend" (click)="setFocusedSeverity('All')">
+                  <span class="legend-box accepted-box"></span>
+                  <span>Accepted (AI)</span>
+                </div>
+                <div class="legend-item interactive-legend" (click)="setFocusedSeverity('All')">
+                  <span class="legend-box posted-box"></span>
+                  <span>Posted (Total)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bento Box: SUGGESTIONS BY SEVERITY (Interactive Donut Chart with Dynamic Core) -->
+          <div class="bento-card">
+            <div class="bento-card-header">
+              <div class="card-title-group">
+                <span class="bento-card-title">SUGGESTIONS BY SEVERITY</span>
+                <span class="card-sub-hint">Hover arcs to inspect</span>
+              </div>
+              @if (focusedSeverity() !== 'All') {
+                <button class="reset-filter-tag" (click)="setFocusedSeverity('All')">
+                  <span>Clear Filter</span>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              }
+            </div>
+            <div class="chart-container donut-container">
+              <div class="donut-interactive-wrapper">
+                <svg viewBox="0 0 260 230" class="donut-svg">
+                  <!-- Critical Segment -->
+                  <circle cx="130" cy="115" r="62" fill="none" stroke="#10b981" stroke-width="30"
+                          [attr.stroke-dasharray]="donutData().criticalDash" 
+                          [attr.stroke-dashoffset]="donutData().criticalOffset" 
+                          transform="rotate(-90 130 115)"
+                          class="donut-segment critical-segment"
+                          [class.highlighted]="focusedSeverity() === 'Critical' || hoveredSeverity() === 'Critical'"
+                          (mouseenter)="hoveredSeverity.set('Critical')"
+                          (mouseleave)="hoveredSeverity.set(null)"
+                          (click)="setFocusedSeverity(focusedSeverity() === 'Critical' ? 'All' : 'Critical')"/>
+                  
+                  <!-- Major Segment -->
+                  <circle cx="130" cy="115" r="62" fill="none" stroke="#3b4261" stroke-width="30"
+                          [attr.stroke-dasharray]="donutData().majorDash" 
+                          [attr.stroke-dashoffset]="donutData().majorOffset" 
+                          transform="rotate(-90 130 115)"
+                          class="donut-segment major-segment"
+                          [class.highlighted]="focusedSeverity() === 'Major' || hoveredSeverity() === 'Major'"
+                          (mouseenter)="hoveredSeverity.set('Major')"
+                          (mouseleave)="hoveredSeverity.set(null)"
+                          (click)="setFocusedSeverity(focusedSeverity() === 'Major' ? 'All' : 'Major')"/>
+                  
+                  <!-- Minor Segment -->
+                  <circle cx="130" cy="115" r="62" fill="none" stroke="#0891b2" stroke-width="30"
+                          [attr.stroke-dasharray]="donutData().minorDash" 
+                          [attr.stroke-dashoffset]="donutData().minorOffset" 
+                          transform="rotate(-90 130 115)"
+                          class="donut-segment minor-segment"
+                          [class.highlighted]="focusedSeverity() === 'Minor' || hoveredSeverity() === 'Minor'"
+                          (mouseenter)="hoveredSeverity.set('Minor')"
+                          (mouseleave)="hoveredSeverity.set(null)"
+                          (click)="setFocusedSeverity(focusedSeverity() === 'Minor' ? 'All' : 'Minor')"/>
+                </svg>
+
+                <!-- Dynamic Donut Center Display -->
+                <div class="donut-center-content">
+                  <span class="donut-center-tag">{{ donutCenterTitle() }}</span>
+                  <span class="donut-center-num">{{ donutCenterValue() }}</span>
+                  <span class="donut-center-detail">{{ donutCenterSubtext() }}</span>
+                </div>
+              </div>
+
+              <!-- Donut Legend with Click Handlers -->
+              <div class="chart-legend">
+                <div class="legend-item interactive-legend" 
+                     [class.active-legend]="focusedSeverity() === 'Critical'"
+                     (click)="setFocusedSeverity(focusedSeverity() === 'Critical' ? 'All' : 'Critical')">
+                  <span class="legend-box critical-box"></span>
+                  <span>Critical ({{ donutData().criticalPct }}%)</span>
+                </div>
+                <div class="legend-item interactive-legend"
+                     [class.active-legend]="focusedSeverity() === 'Major'"
+                     (click)="setFocusedSeverity(focusedSeverity() === 'Major' ? 'All' : 'Major')">
+                  <span class="legend-box major-box"></span>
+                  <span>Major ({{ donutData().majorPct }}%)</span>
+                </div>
+                <div class="legend-item interactive-legend"
+                     [class.active-legend]="focusedSeverity() === 'Minor'"
+                     (click)="setFocusedSeverity(focusedSeverity() === 'Minor' ? 'All' : 'Minor')">
+                  <span class="legend-box minor-box"></span>
+                  <span>Minor ({{ donutData().minorPct }}%)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ROW 3: Interactive Suggestions Breakdown & 8-Axis Category Distribution -->
+        <div class="bento-row-bottom">
+          
+          <!-- Left: SUGGESTIONS BREAKDOWN (Interactive Click-to-Inspect) -->
+          <div class="bento-card wide-card">
+            <div class="bento-card-header">
+              <div class="card-title-group">
+                <span class="bento-card-title">SUGGESTIONS BREAKDOWN</span>
+                <span class="card-sub-hint">Click any category to inspect in Code Smells</span>
+              </div>
+              <div class="category-filter-pills">
+                <button class="cat-pill" [class.active]="focusedSeverity() === 'All'" (click)="setFocusedSeverity('All')">All</button>
+                <button class="cat-pill" [class.active]="focusedSeverity() === 'Critical'" (click)="setFocusedSeverity('Critical')">Critical</button>
+                <button class="cat-pill" [class.active]="focusedSeverity() === 'Major'" (click)="setFocusedSeverity('Major')">Major</button>
+                <button class="cat-pill" [class.active]="focusedSeverity() === 'Minor'" (click)="setFocusedSeverity('Minor')">Minor</button>
+              </div>
+            </div>
+            <div class="stacked-bar-container">
+              @for (item of displayedSuggestions(); track item.category) {
+                <div class="stacked-bar-row interactive-row" (click)="selectCategory(item.category)" title="Click to inspect {{ item.category }} in Code Smells">
+                  <span class="bar-label" [title]="item.category">{{ item.category }}</span>
+                  <span class="bar-ratio-mono">{{ item.accepted }}/{{ item.posted }}</span>
+                  <div class="bar-track">
+                    <!-- Accepted Segment -->
+                    <div class="bar-segment accepted-segment" 
+                         [style.width.%]="item.acceptedPct"
+                         title="Accepted: {{ item.accepted }}">
+                    </div>
+                    <!-- Posted Segment -->
+                    <div class="bar-segment posted-segment" 
+                         [style.width.%]="item.remainingPct"
+                         title="Remaining: {{ item.posted - item.accepted }}">
+                    </div>
+                  </div>
+                </div>
+              }
+
+              <div class="chart-legend left-legend">
+                <div class="legend-item">
+                  <span class="legend-box accepted-box"></span>
+                  <span>Accepted (AI Validated)</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-box posted-box"></span>
+                  <span>Posted (Total Suggestions)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: CATEGORY DISTRIBUTION (8-Axis Radar Chart) -->
+          <div class="bento-card">
+            <div class="bento-card-header">
+              <span class="bento-card-title">CATEGORY DISTRIBUTION</span>
+              <button class="info-icon" title="8-axis category coverage matrix">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="16" x2="12" y2="12"/>
+                  <line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+              </button>
+            </div>
+            <div class="chart-container radar-category-container">
+              <svg viewBox="0 0 440 330" class="radar-svg category-radar-svg">
+                <!-- Concentric Octagon Spiderwebs -->
+                <polygon [attr.points]="getRadarWebPath(1.0)" fill="none" stroke="#222b3d" stroke-width="1.2"/>
+                <polygon [attr.points]="getRadarWebPath(0.75)" fill="none" stroke="#1c2333" stroke-width="1"/>
+                <polygon [attr.points]="getRadarWebPath(0.50)" fill="none" stroke="#181f2c" stroke-width="1"/>
+                <polygon [attr.points]="getRadarWebPath(0.25)" fill="none" stroke="#141a24" stroke-width="1"/>
+
+                <!-- Category Labels at Vertices -->
+                @for (item of summaryData()?.categoryDistribution; track item.category; let idx = $index) {
+                  @let pos = getCategoryLabelPos(idx);
+                  <text [attr.x]="pos.x" [attr.y]="pos.y" [attr.text-anchor]="pos.anchor" class="radar-category-text" [title]="pos.fullName">
+                    {{ pos.shortName }}
+                  </text>
+                }
+
+                <!-- Posted Polygon (Purple) -->
+                <polygon [attr.points]="get8PointPolygon('posted')" 
+                         class="radar-anim-polygon"
+                         fill="#6366f1" 
+                         fill-opacity="0.2" 
+                         stroke="#6366f1" 
+                         stroke-width="1.8" 
+                         stroke-linejoin="round"/>
+
+                <!-- Accepted Polygon (Teal) -->
+                <polygon [attr.points]="get8PointPolygon('accepted')" 
+                         class="radar-anim-polygon"
+                         fill="#10b981" 
+                         fill-opacity="0.35" 
+                         stroke="#10b981" 
+                         stroke-width="2" 
+                         stroke-linejoin="round"/>
+              </svg>
+
+              <!-- Category Radar Legend -->
+              <div class="chart-legend">
+                <div class="legend-item">
+                  <span class="legend-box accepted-box"></span>
+                  <span>Accepted</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-box posted-box"></span>
+                  <span>Posted</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    }
+
+    <!-- TAB 2: ARCHITECTURE & FLOW -->
+    @if (activeTab() === 'architecture') {
+      <div class="section-container">
+        <div class="section-hero">
+          <div class="hero-badge">AI Architecture Synthesis</div>
+          <h2>{{ architectureData()?.architecturePattern || 'Clean Architecture / Microservices' }}</h2>
+          <p class="hero-desc">{{ architectureData()?.summary }}</p>
+        </div>
+
+        <!-- Tech Stack Chips -->
+        <div class="tech-stack-row">
+          @for (item of architectureData()?.techStack | keyvalue; track item.key) {
+            <div class="tech-chip">
+              <span class="tech-chip-key">{{ item.key }}:</span>
+              <span class="tech-chip-val">{{ item.value }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- Mermaid Diagram Card -->
+        <div class="bento-card full-width">
+          <div class="bento-card-header">
+            <div class="diagram-title-group">
+              <span class="bento-card-title">SYSTEM TOPOLOGY & DATA FLOW</span>
+              <span class="status-tag">Live Mermaid Diagram</span>
+            </div>
+            <div class="diagram-inline-controls">
+              <button class="diagram-ctrl-btn" (click)="zoomArch(-0.15)" title="Zoom Out (-)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </button>
+              <span class="diagram-zoom-badge" (click)="resetArchZoom()" title="Click to reset zoom">{{ Math.round(archZoom() * 100) }}%</span>
+              <button class="diagram-ctrl-btn" (click)="zoomArch(0.15)" title="Zoom In (+)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </button>
+              <button class="diagram-ctrl-btn reset-btn" (click)="resetArchZoom()" title="Reset to default (1:1)">
+                1:1
+              </button>
+              <button class="diagram-fullscreen-trigger-btn" (click)="openFullscreenDiagram('System Topology & Data Flow', architectureData()?.mermaidDiagram || '')" title="Expand Fullscreen / Maximize">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15 3 21 3 21 9"/>
+                  <polyline points="9 21 3 21 3 15"/>
+                  <line x1="21" y1="3" x2="14" y2="10"/>
+                  <line x1="3" y1="21" x2="10" y2="14"/>
+                </svg>
+                <span>Fullscreen</span>
+              </button>
+            </div>
+          </div>
+          <div class="mermaid-box-viewport">
+            <div class="mermaid-box" [style.transform]="'scale(' + archZoom() + ')'" [style.transform-origin]="'top center'">
+              <div class="mermaid-code" [attr.data-mermaid]="architectureData()?.mermaidDiagram">
+                {{ architectureData()?.mermaidDiagram }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Component Layers Grid -->
+        <div class="components-grid">
+          @for (comp of architectureData()?.components; track comp.name) {
+            <div class="component-card">
+              <div class="comp-top">
+                <span class="comp-layer-badge">{{ comp.layer }}</span>
+                <span class="comp-file-count">{{ comp.fileCount }} files</span>
+              </div>
+              <h3 class="comp-title">{{ comp.name }}</h3>
+              <p class="comp-desc">{{ comp.description }}</p>
+              @if (comp.dependencies.length > 0) {
+                <div class="comp-deps">
+                  <span class="deps-label">Depends on:</span>
+                  @for (dep of comp.dependencies; track dep) {
+                    <span class="dep-tag">{{ dep }}</span>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- TAB 3: IMPACT ANALYSIS (Predictive Blast Radius) -->
+    @if (activeTab() === 'impact') {
+      <div class="section-container">
+        <div class="section-hero">
+          <div class="hero-badge hero-badge-emerald">Predictive Blast Radius & Regression Analysis</div>
+          <h2>AI Impact Analysis & Change Risk Modeling</h2>
+          <p class="hero-desc">
+            Senior AI Developer analyzes function-level blast radius, API contract breaks, database mutations, and distributed queue consumers
+          </p>
+        </div>
+
+        <div class="impact-query-box">
+          <div class="input-group">
+            <label>1. Select Target File to Modify (Target File):</label>
+            <select class="custom-select" [(ngModel)]="targetFile">
+              @for (file of fileList(); track file) {
+                <option [value]="file">{{ file }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>2. Describe Proposed Modification (Proposed Modification):</label>
+            <textarea class="custom-textarea" rows="3" [(ngModel)]="proposedChange" 
+                      placeholder="e.g.: Refactor TotalAmount data type from double to decimal and optimize asynchronous queue worker"></textarea>
+          </div>
+
+          <button class="primary-ai-btn" [disabled]="isAnalyzingImpact()" (click)="runImpactAnalysis()">
+            @if (isAnalyzingImpact()) {
+              <span class="btn-spinner"></span>
+              <span>AI Analyzing Deep Blast Radius...</span>
+            } @else {
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+              <span>Run AI Impact Analysis</span>
+            }
+          </button>
+        </div>
+
+        @if (impactResult(); as res) {
+          <div class="impact-results-deck">
+            
+            <!-- Blast Radius Indicator -->
+            <div class="blast-card" [ngClass]="'blast-' + res.blastRadiusLevel.toLowerCase()">
+              <div class="blast-header">
+                <span class="blast-title">BLAST RADIUS RISK LEVEL</span>
+                <span class="blast-badge">{{ res.blastRadiusLevel }} RISK</span>
+              </div>
+              <p class="blast-target">Target: <code>{{ res.targetFile }}</code></p>
+            </div>
+
+            <!-- Senior Dev Commentary -->
+            <div class="senior-advice-card">
+              <div class="advice-header">
+                <div class="avatar-small">AI</div>
+                <h3>Senior Tech Lead Architectural Recommendations</h3>
+              </div>
+              <p class="advice-body">{{ res.seniorDevAdvice }}</p>
+            </div>
+
+            <!-- Breaking Risks & Testing Bento -->
+            <div class="impact-two-col">
+              <div class="bento-card">
+                <div class="bento-card-header">
+                  <div class="bento-card-title-row">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                      <line x1="12" y1="9" x2="12" y2="13"/>
+                      <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    <span class="bento-card-title warning-title">CRITICAL BREAKING RISKS</span>
+                  </div>
+                </div>
+                <ul class="danger-list">
+                  @for (risk of res.breakingChangeRisks; track risk) {
+                    <li>{{ risk }}</li>
+                  }
+                </ul>
+              </div>
+
+              <div class="bento-card">
+                <div class="bento-card-header">
+                  <div class="bento-card-title-row">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                      <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span class="bento-card-title check-title">TESTING & VERIFICATION STRATEGY</span>
+                  </div>
+                </div>
+                <ul class="check-list">
+                  @for (test of res.testingRecommendations; track test) {
+                    <li>{{ test }}</li>
+                  }
+                </ul>
+              </div>
+            </div>
+
+            <!-- Affected Files & Downstream Components -->
+            <div class="bento-card full-width">
+              <div class="bento-card-header">
+                <span class="bento-card-title">AFFECTED DOWNSTREAM FILES & SERVICES</span>
+              </div>
+              <div class="chip-container">
+                @for (comp of res.affectedComponents; track comp) {
+                  <span class="affected-chip">{{ comp }}</span>
+                }
+              </div>
+              <div class="file-table">
+                @for (f of res.affectedFiles; track f) {
+                  <div class="file-row">
+                    <svg class="file-svg-glyph" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    <code>{{ f }}</code>
+                    <span class="badge-impact">Direct Dependent</span>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Impact Diagram -->
+            @if (res.architectureImpactDiagram) {
+              <div class="bento-card full-width">
+                <div class="bento-card-header">
+                  <div class="diagram-title-group">
+                    <span class="bento-card-title">VISUAL IMPACT PROPAGATION FLOW</span>
+                    <span class="status-tag">Blast Radius Graph</span>
+                  </div>
+                  <div class="diagram-inline-controls">
+                    <button class="diagram-ctrl-btn" (click)="zoomImpact(-0.15)" title="Zoom Out (-)">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                      </svg>
+                    </button>
+                    <span class="diagram-zoom-badge" (click)="resetImpactZoom()" title="Click to reset zoom">{{ Math.round(impactZoom() * 100) }}%</span>
+                    <button class="diagram-ctrl-btn" (click)="zoomImpact(0.15)" title="Zoom In (+)">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                      </svg>
+                    </button>
+                    <button class="diagram-ctrl-btn reset-btn" (click)="resetImpactZoom()" title="Reset to default (1:1)">
+                      1:1
+                    </button>
+                    <button class="diagram-fullscreen-trigger-btn" (click)="openFullscreenDiagram('Visual Impact Propagation Flow', res.architectureImpactDiagram)" title="Expand Fullscreen / Maximize">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 3 21 3 21 9"/>
+                        <polyline points="9 21 3 21 3 15"/>
+                        <line x1="21" y1="3" x2="14" y2="10"/>
+                        <line x1="3" y1="21" x2="10" y2="14"/>
+                      </svg>
+                      <span>Fullscreen</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="mermaid-box-viewport">
+                  <div class="mermaid-box" [style.transform]="'scale(' + impactZoom() + ')'" [style.transform-origin]="'top center'">
+                    <div class="mermaid-code" [attr.data-mermaid]="res.architectureImpactDiagram">
+                      {{ res.architectureImpactDiagram }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+
+          </div>
+        }
+      </div>
+    }
+
+    <!-- TAB 4: CODE SMELLS & SECURITY -->
+    @if (activeTab() === 'security') {
+      <div class="section-container">
+        <div class="section-hero">
+          <div class="hero-badge hero-badge-danger">Static & AI Code Scanner</div>
+          <h2>Security Risks, Anti-Patterns & Code Smells</h2>
+          <p class="hero-desc">Detect security vulnerabilities, unsafe SQL interpolations, and code anti-patterns with automated remediation snippets</p>
+        </div>
+
+        <!-- Severity Summary Counters -->
+        <div class="severity-counters-row">
+          <div class="counter-card" [class.active]="selectedSeverityFilter() === 'All'" (click)="selectedSeverityFilter.set('All')">
+            <span class="counter-num">{{ securityData()?.totalIssues || 0 }}</span>
+            <span class="counter-lbl">TOTAL ISSUES</span>
+          </div>
+          <div class="counter-card critical" [class.active]="selectedSeverityFilter() === 'Critical'" (click)="selectedSeverityFilter.set('Critical')">
+            <span class="counter-num">{{ securityData()?.criticalCount || 0 }}</span>
+            <span class="counter-lbl">CRITICAL</span>
+          </div>
+          <div class="counter-card major" [class.active]="selectedSeverityFilter() === 'Major'" (click)="selectedSeverityFilter.set('Major')">
+            <span class="counter-num">{{ securityData()?.majorCount || 0 }}</span>
+            <span class="counter-lbl">MAJOR</span>
+          </div>
+          <div class="counter-card minor" [class.active]="selectedSeverityFilter() === 'Minor'" (click)="selectedSeverityFilter.set('Minor')">
+            <span class="counter-num">{{ securityData()?.minorCount || 0 }}</span>
+            <span class="counter-lbl">MINOR</span>
+          </div>
+        </div>
+
+        <!-- Issue List -->
+        <div class="issues-list">
+          @for (issue of filteredIssues(); track issue.id) {
+            <div class="issue-card" [ngClass]="'severity-' + issue.severity.toLowerCase()">
+              <div class="issue-top">
+                <div class="issue-tags">
+                  <span class="severity-badge" [ngClass]="'badge-' + issue.severity.toLowerCase()">{{ issue.severity }}</span>
+                  <span class="category-badge">{{ issue.category }}</span>
+                  <span class="issue-id">{{ issue.id }}</span>
+                </div>
+                <span class="issue-location">{{ issue.file }}:{{ issue.lineNumber }}</span>
+              </div>
+              <h3 class="issue-title">{{ issue.title }}</h3>
+              <p class="issue-desc">{{ issue.description }}</p>
+              
+              <div class="snippet-box">
+                <div class="snippet-header">Detected Pattern:</div>
+                <pre class="snippet-code"><code>{{ issue.codeSnippet }}</code></pre>
+              </div>
+
+              <div class="recommendation-box">
+                <strong>Senior Fix Recommendation:</strong>
+                <span>{{ issue.recommendation }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- TAB 5: AUTO DOCUMENTATION -->
+    @if (activeTab() === 'docs') {
+      <div class="section-container">
+        <div class="section-hero">
+          <div class="hero-badge">Living Documentation</div>
+          <h2>Automated API Documentation & Workflow Sequences</h2>
+          <p class="hero-desc">Synthesize REST API endpoints, schemas, payloads, and request sequence flows directly from codebase symbols</p>
+        </div>
+
+        <!-- API Flow Diagram -->
+        <div class="bento-card full-width">
+          <div class="bento-card-header">
+            <div class="diagram-title-group">
+              <span class="bento-card-title">END-TO-END TRANSACTION SEQUENCE FLOW</span>
+              <span class="status-tag">Sequence Diagram</span>
+            </div>
+            <div class="diagram-inline-controls">
+              <button class="diagram-ctrl-btn" (click)="zoomDocs(-0.15)" title="Zoom Out (-)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </button>
+              <span class="diagram-zoom-badge" (click)="resetDocsZoom()" title="Click to reset zoom">{{ Math.round(docsZoom() * 100) }}%</span>
+              <button class="diagram-ctrl-btn" (click)="zoomDocs(0.15)" title="Zoom In (+)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </button>
+              <button class="diagram-ctrl-btn reset-btn" (click)="resetDocsZoom()" title="Reset to default (1:1)">
+                1:1
+              </button>
+              <button class="diagram-fullscreen-trigger-btn" (click)="openFullscreenDiagram('End-to-End Transaction Sequence Flow', docsData()?.apiFlowMermaid || '')" title="Expand Fullscreen / Maximize">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15 3 21 3 21 9"/>
+                  <polyline points="9 21 3 21 3 15"/>
+                  <line x1="21" y1="3" x2="14" y2="10"/>
+                  <line x1="3" y1="21" x2="10" y2="14"/>
+                </svg>
+                <span>Fullscreen</span>
+              </button>
+            </div>
+          </div>
+          <div class="mermaid-box-viewport">
+            <div class="mermaid-box" [style.transform]="'scale(' + docsZoom() + ')'" [style.transform-origin]="'top center'">
+              <div class="mermaid-code" [attr.data-mermaid]="docsData()?.apiFlowMermaid">
+                {{ docsData()?.apiFlowMermaid }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Endpoints List -->
+        <div class="endpoints-grid">
+          @for (ep of docsData()?.endpoints; track ep.path) {
+            <div class="endpoint-card">
+              <div class="endpoint-header">
+                <span class="method-badge" [ngClass]="'method-' + ep.method.toLowerCase()">{{ ep.method }}</span>
+                <code class="endpoint-path">{{ ep.path }}</code>
+                @if (ep.requiresAuth) {
+                  <span class="auth-badge">Auth Required</span>
+                }
+              </div>
+              <p class="endpoint-summary">{{ ep.summary }}</p>
+
+              <div class="payloads-grid">
+                <div class="payload-box">
+                  <div class="payload-title">Request Payload</div>
+                  <pre><code>{{ ep.requestPayload }}</code></pre>
+                </div>
+                <div class="payload-box">
+                  <div class="payload-title">Response Payload</div>
+                  <pre><code>{{ ep.responsePayload }}</code></pre>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- TAB 6: TECHNICAL DEBT -->
+    @if (activeTab() === 'debt') {
+      <div class="section-container">
+        <div class="section-hero">
+          <div class="hero-badge hero-badge-emerald">Senior Refactor Radar</div>
+          <h2>Technical Debt Ledger & Remediation Roadmap</h2>
+          <p class="hero-desc">Estimate accumulated technical debt and prioritized refactoring sprint roadmap to maximize developer velocity</p>
+        </div>
+
+        <div class="debt-kpi-row">
+          <div class="debt-card">
+            <span class="debt-label">CODEBASE HEALTH SCORE</span>
+            <div class="debt-score-circle">
+              <span class="debt-score-num">{{ debtData()?.debtScore || 82 }}</span>
+              <span class="debt-score-denom">/ 100</span>
+            </div>
+            <span class="debt-status">Grade: A- (Manageable Debt)</span>
+          </div>
+
+          <div class="debt-card">
+            <span class="debt-label">ESTIMATED REMEDIATION TIME</span>
+            <div class="debt-big-val">{{ debtData()?.estimatedRemediationHours || 38.5 }}</div>
+            <span class="debt-sub">ENGINEERING HOURS</span>
+          </div>
+
+          <div class="debt-card">
+            <span class="debt-label">TECHNICAL DEBT RATIO</span>
+            <div class="debt-big-val">{{ debtData()?.technicalDebtRatioPercent || 6.4 }}%</div>
+            <span class="debt-sub">OF TOTAL CODEBASE</span>
+          </div>
+        </div>
+
+        <!-- Refactor Targets Table -->
+        <div class="bento-card full-width">
+          <div class="bento-card-header">
+            <span class="bento-card-title">TOP REFACTORING TARGETS (RANKED BY ROI)</span>
+          </div>
+          <div class="refactor-table">
+            <div class="refactor-thead">
+              <span>Priority</span>
+              <span>Target File</span>
+              <span>Reason & Smell</span>
+              <span>Est. Hours Saved</span>
+            </div>
+            @if (debtData()?.refactorTargets?.length) {
+              @for (item of debtData()?.refactorTargets; track item.file) {
+                <div class="refactor-trow">
+                  <span class="priority-pill" [ngClass]="'prio-' + (item.priority || 'low').toLowerCase()">{{ item.priority }}</span>
+                  <code class="refactor-file" [title]="item.file">{{ item.file }}</code>
+                  <span class="refactor-reason">{{ item.reason }}</span>
+                  <span class="refactor-hours">+{{ item.estimatedHoursSaved }} hrs/sprint</span>
+                </div>
+              }
+            } @else {
+              <div style="padding: 20px; text-align: center; color: #94a3b8; font-size: 13px;">
+                Analyzing and prioritizing technical debt with Senior AI Engine...
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Senior Dev Sprint Roadmap -->
+        <div class="senior-advice-card">
+          <div class="advice-header">
+            <div class="avatar-small">AI</div>
+            <h3>Senior Developer Sprint Refactor Roadmap</h3>
+          </div>
+          <div class="roadmap-content">
+            {{ debtData()?.seniorDevRoadmap }}
+          </div>
+        </div>
+      </div>
+    }
+
+  </main>
+
+  <!-- Vercel-Style GitHub Import Modal -->
+  @if (isImportModalOpen()) {
+    <div class="modal-backdrop" (click)="closeImportModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div class="modal-title-row">
+            <svg class="github-large-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>
+            <div>
+              <h3>Import Git Repository</h3>
+              <p class="modal-sub">Connect and analyze any GitHub repository directly like Vercel</p>
+            </div>
+          </div>
+          <button class="modal-close-btn" (click)="closeImportModal()" aria-label="Close modal">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          @if (importError()) {
+            <div class="modal-alert-danger">
+              {{ importError() }}
+            </div>
+          }
+
+          <div class="input-group">
+            <label>GitHub Repository URL or Identifier:</label>
+            <div class="input-with-icon">
+              <span class="url-prefix">https://github.com/</span>
+              <input type="text" class="modal-input" placeholder="owner/repo (e.g. dotnet/eShop or angular/angular)" 
+                     [(ngModel)]="importRepoUrl" />
+            </div>
+          </div>
+
+          <div class="modal-grid-two">
+            <div class="input-group">
+              <label>Branch:</label>
+              <input type="text" class="modal-input" placeholder="main" [(ngModel)]="importBranch" />
+            </div>
+
+            <div class="input-group">
+              <label>Personal Access Token (for Private Repositories):</label>
+              <input type="password" class="modal-input" placeholder="ghp_xxxxxxxxxxxx (Optional)" [(ngModel)]="importToken" />
+            </div>
+          </div>
+
+          <!-- Quick Templates / Popular Repositories -->
+          <div class="templates-section">
+            <label class="templates-title">Or choose from Popular Open-Source Repositories (1-Click Import):</label>
+            <div class="templates-list">
+              @for (tpl of popularTemplates(); track tpl.fullName) {
+                <div class="template-item" (click)="selectTemplate(tpl.fullName)" [class.selected]="importRepoUrl() === tpl.fullName">
+                  <div class="tpl-top">
+                    <span class="tpl-name">{{ tpl.fullName }}</span>
+                    <span class="tpl-lang">{{ tpl.language }}</span>
+                  </div>
+                  <p class="tpl-desc">{{ tpl.description }}</p>
+                  <div class="tpl-meta">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" stroke-width="1">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                    <span>{{ tpl.stars | number }} stars</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-primary-import" [disabled]="isImporting()" (click)="importGitHubRepo()">
+            @if (isImporting()) {
+              <span class="btn-spinner"></span>
+              <span>Cloning repository and analyzing AST with AI...</span>
+            } @else {
+              <span>Import & Start AI Analysis</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Dedicated Fullscreen Interactive Diagram & Flow Viewer -->
+  @if (fullscreenDiagram()) {
+    <div class="diagram-modal-backdrop" (click)="closeFullscreenDiagram()">
+      <div class="diagram-modal-window" (click)="$event.stopPropagation()">
+        <!-- Header -->
+        <div class="diagram-modal-header">
+          <div class="diagram-modal-title-group">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M9 3v18"/>
+              <path d="M14 9h7"/>
+              <path d="M14 15h7"/>
+            </svg>
+            <div>
+              <h3>{{ fullscreenDiagram()!.title }}</h3>
+              <p class="diagram-modal-sub">Interactive Architecture & Workflow Sequence Visualizer</p>
+            </div>
+          </div>
+
+          <div class="diagram-modal-toolbar">
+            <div class="diagram-zoom-cluster">
+              <button class="modal-tool-btn" (click)="zoomFullscreen(-0.2)" title="Zoom Out (-)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </button>
+              <span class="modal-zoom-display" (click)="resetFullscreenZoom()" title="Click to reset (1:1)">
+                {{ Math.round(fullscreenDiagram()!.zoom * 100) }}%
+              </span>
+              <button class="modal-tool-btn" (click)="zoomFullscreen(0.2)" title="Zoom In (+)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </button>
+              <button class="modal-tool-btn reset-text-btn" (click)="resetFullscreenZoom()" title="Reset to default scale and center">
+                Reset 1:1
+              </button>
+            </div>
+
+            <div class="canvas-help-hint">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+              <span>Drag to pan canvas &bull; Mouse wheel to zoom &bull; Esc to close</span>
+            </div>
+
+            <button class="modal-close-btn" (click)="closeFullscreenDiagram()" aria-label="Close fullscreen modal">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Interactive Canvas Viewport (Pan + Zoom) -->
+        <div class="diagram-modal-canvas-viewport"
+             (mousedown)="onPanStart($event)"
+             (mousemove)="onPanMove($event)"
+             (mouseup)="onPanEnd()"
+             (mouseleave)="onPanEnd()"
+             (wheel)="onWheelZoom($event)">
+          <div class="diagram-pan-zoom-container"
+               [style.transform]="'translate(' + fullscreenDiagram()!.panX + 'px, ' + fullscreenDiagram()!.panY + 'px) scale(' + fullscreenDiagram()!.zoom + ')'">
+            <div id="fullscreen-mermaid-container" class="mermaid-code" [attr.data-mermaid]="fullscreenDiagram()!.code">
+              {{ fullscreenDiagram()!.code }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

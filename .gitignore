@@ -1,0 +1,46 @@
+﻿# Build and Distribution Directories
+bin/
+obj/
+dist/
+out/
+build/
+.angular/
+
+# Node & Package Managers
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Secrets & Environment Configurations (Zero-Leak Security)
+appsettings.Local.json
+appsettings.local.json
+appsettings.Development.Local.json
+.env
+.env.*
+!.env.example
+*.local
+
+# IDE & Editor Directories
+.vs/
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+
+# Testing & Coverage
+coverage/
+TestResults/
+*.lcov
+*.clover
