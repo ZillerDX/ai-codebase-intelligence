@@ -27,13 +27,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
           cache-dependency-path: 'frontend/codebase-intelligence-web/package-lock.json'
 
       - name: Install Frontend Dependencies
         working-directory: frontend/codebase-intelligence-web
-        run: npm ci
+        run: npm install
 
       - name: Build for GitHub Pages
         working-directory: frontend/codebase-intelligence-web
