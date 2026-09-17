@@ -27,7 +27,51 @@
 
 ---
 
-## 2. System Architecture & Flow
+## 2. Visual Product Showcase & Interface Gallery
+
+Experience the platform's presentation-grade telemetry and interactive developer tools:
+
+<div align="center">
+  <kbd><img src="docs/screenshots/01-executive-cockpit.png" alt="Executive Engineering Cockpit" width="100%" /></kbd>
+  <p><em>Figure 1: Executive Engineering Cockpit — Real-time telemetry, 3-Axis & 8-Axis SVG dynamic radar polygons, code review velocity metrics, and AI architectural insights.</em></p>
+</div>
+
+<br/>
+
+### Core Interface Highlights
+
+| Feature Area | Live Preview Snapshot | Key Engineering Capabilities |
+| :--- | :---: | :--- |
+| **System Architecture Topology** | <a href="docs/screenshots/02-architecture-topology.png"><img src="docs/screenshots/02-architecture-topology.png" width="380" alt="System Architecture Topology" /></a> | • Dynamic Mermaid distributed microservices graph<br>• Real-time Pan & Zoom controls (`0.5x` to `3.5x`)<br>• Structural component role breakdown & layer separation |
+| **AI Predictive Blast Radius** | <a href="docs/screenshots/03-blast-radius-impact.png"><img src="docs/screenshots/03-blast-radius-impact.png" width="380" alt="AI Blast Radius Impact" /></a> | • Pre-flight regression risk scoring (`Critical` / `Moderate` / `Low`)<br>• Senior Tech Lead mitigation counsel & unit test mandates<br>• Downstream dependency cascade mapping |
+| **Fullscreen Topology Viewer** | <a href="docs/screenshots/04-fullscreen-topology-viewer.png"><img src="docs/screenshots/04-fullscreen-topology-viewer.png" width="380" alt="Fullscreen Topology Viewer" /></a> | • Immersive modal canvas with drag-to-pan navigation<br>• Interactive zoom toolbar with 1-click Reset / Center<br>• High-density sequence flow and node inspectability |
+| **1-Click Git Repository Ingestion** | <a href="docs/screenshots/05-git-repository-import.png"><img src="docs/screenshots/05-git-repository-import.png" width="380" alt="Git Repository Ingestion" /></a> | • Instant import from any public GitHub repository<br>• Git Tree recursive crawler & automated file classification<br>• Multi-stage telemetry animated loader with zero-leak local caching |
+
+<details>
+<summary><b>🔍 Click to expand full-width high-resolution screenshot gallery</b></summary>
+<br/>
+
+#### 1. System Architecture & Topology Mapping
+> Rendered dynamically via client-side Mermaid.js with interactive pan/zoom tooling.
+<kbd><img src="docs/screenshots/02-architecture-topology.png" width="100%" alt="System Architecture Topology" /></kbd>
+
+#### 2. AI Predictive Blast Radius & Regression Risk
+> Downstream ripple-effect analysis simulating file modifications before merging PRs.
+<kbd><img src="docs/screenshots/03-blast-radius-impact.png" width="100%" alt="AI Blast Radius Impact" /></kbd>
+
+#### 3. Fullscreen Architecture Inspection Canvas
+> Deep structural examination of complex microservice call graphs and event buses.
+<kbd><img src="docs/screenshots/04-fullscreen-topology-viewer.png" width="100%" alt="Fullscreen Topology Viewer" /></kbd>
+
+#### 4. GitHub Repository Ingestion & Tree Scanner
+> Seamless Git Tree parsing and automated codebase synthesis.
+<kbd><img src="docs/screenshots/05-git-repository-import.png" width="100%" alt="Git Repository Ingestion" /></kbd>
+
+</details>
+
+---
+
+## 3. System Architecture & Flow
 
 ### 2.1 System Topology & Ingestion Pipeline
 
@@ -155,7 +199,7 @@ erDiagram
 
 ---
 
-## 3. Project Directory Tree
+## 4. Project Directory Tree
 
 ```text
 ai-codebase-intelligence/
@@ -165,6 +209,14 @@ ai-codebase-intelligence/
 ├── .gitignore                           # Zero-leak exclusions (.NET, Node, secrets)
 ├── LICENSE                              # MIT Open-Source License
 ├── README.md                            # Comprehensive Portfolio Documentation
+│
+├── docs/                                # Presentation-grade media & visual assets
+│   └── screenshots/                     # 1440x900 high-resolution interface captures
+│       ├── 01-executive-cockpit.png
+│       ├── 02-architecture-topology.png
+│       ├── 03-blast-radius-impact.png
+│       ├── 04-fullscreen-topology-viewer.png
+│       └── 05-git-repository-import.png
 │
 ├── backend/                             # .NET 9 Minimal Web API & Microservice Core
 │   ├── CodebaseIntelligence.Api/
@@ -219,11 +271,11 @@ ai-codebase-intelligence/
 
 ---
 
-## 4. Engineering Evidence & Verification Matrix
+## 5. Engineering Evidence & Verification Matrix
 
 The codebase undergoes continuous validation across 5 quality gates. Below are pass proofs and verified outputs:
 
-### 4.1 Automated Test Execution Proofs
+### 5.1 Automated Test Execution Proofs
 
 | Tier | Framework | Test File | Passed | Failed | Duration | Exit Code |
 | :--- | :--- | :--- | :---: | :---: | :---: | :---: |
@@ -233,7 +285,7 @@ The codebase undergoes continuous validation across 5 quality gates. Below are p
 | **Build (SPA)** | Angular CLI 19 | `@angular/build:application` | **Bundle Clean** | **0 Errors** | 24.38 s | `0` |
 | **Live Browser** | Playwright Headless | `https://zillerdx.github.io/ai-codebase-intelligence/` | **Verified** | **0 Uncaught Errors** | Clean | `0` |
 
-### 4.2 Interactive REST API Specification
+### 5.2 Interactive REST API Specification
 
 The local .NET 9 Web API exposes a fully documented OpenAPI specification on `http://localhost:5080/openapi/v1.json`:
 
@@ -252,7 +304,7 @@ GET  /api/analysis/github/popular-templates # Curated open-source 1-click import
 
 ---
 
-## 5. Key Functional Modules
+## 6. Key Functional Modules
 
 | Module | Description | Interactive Capabilities |
 | :--- | :--- | :--- |
@@ -266,7 +318,7 @@ GET  /api/analysis/github/popular-templates # Curated open-source 1-click import
 
 ---
 
-## 6. Local Setup & Development Guide
+## 7. Local Setup & Development Guide
 
 ### Prerequisites
 - **.NET 9 SDK**: [Download .NET 9](https://dotnet.microsoft.com/download/dotnet/9.0)
@@ -321,7 +373,7 @@ npm test -- --watch=false
 
 ---
 
-## 7. Deployment to GitHub Pages & CI/CD
+## 8. Deployment to GitHub Pages & CI/CD
 
 The repository utilizes an enterprise GitHub Actions pipeline (`.github/workflows/deploy-pages.yml`) targeting Node 22 with least-privilege token permissions (`contents: read`, `pages: write`, `id-token: write`).
 
@@ -340,7 +392,7 @@ The output files will be generated in `dist/codebase-intelligence-web/browser/`.
 
 ---
 
-## 8. Zero-Leak Security Architecture
+## 9. Zero-Leak Security Architecture
 
 - **Strict Server-Side Proxying**: Public visitors on GitHub Pages never receive direct exposure to AI credentials or tokens. All neural queries requiring secrets are securely proxied through the local .NET backend.
 - **Pre-Flight GitIgnore Isolation**: Sensitive configuration files (`appsettings.local.json`, `appsettings.Development.Local.json`, `.env*`) are strictly ignored and verified via automated pattern scans.
@@ -348,6 +400,6 @@ The output files will be generated in `dist/codebase-intelligence-web/browser/`.
 
 ---
 
-## 9. License
+## 10. License
 
 This project is licensed under the [MIT License](LICENSE).
