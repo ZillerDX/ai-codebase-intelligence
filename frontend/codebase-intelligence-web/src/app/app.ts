@@ -567,6 +567,12 @@ export class App implements OnInit {
     // Strip markdown code fences if present
     clean = clean.replace(/^```mermaid\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/, '').trim();
 
+    // Ensure header (graph TB/LR, sequenceDiagram) is followed by newline
+    clean = clean.replace(/^(graph\s+[A-Za-z]+)\s+([A-Za-z0-9_])/i, '$1\n  $2');
+
+    // If lines were collapsed into single line, split chained statements
+    clean = clean.replace(/(\]\s+)([A-Za-z0-9_-]+(\s*-->|\s*-\.->|\s*==>|\s*\[))/g, '$1\n  $2');
+
     // Replace unquoted '&' inside square brackets [ ... & ... ] with 'and'
     clean = clean.replace(/\[([^\]"]*?)&([^\]"]*?)\]/g, '[$1 and $2]');
 
@@ -578,7 +584,7 @@ export class App implements OnInit {
       return `${id}["${label.trim()}"]`;
     });
 
-    // Sequence diagrams: participant aliases with unquoted parens e.g. participant OrderSvc as Order Service (C# .NET)
+    // Sequence diagrams: participant aliases with unquoted parens
     clean = clean.replace(/participant\s+([A-Za-z0-9_]+)\s+as\s+([^"\n]+?\([^)\n]+?\)[^"\n]*)/g, (_, id, label) => {
       return `participant ${id} as "${label.trim()}"`;
     });

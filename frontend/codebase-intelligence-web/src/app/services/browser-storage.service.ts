@@ -680,14 +680,14 @@ export class BrowserStorageService {
       architecturePattern: 'Distributed Microservices (.NET 9 + Angular Standalone)',
       summary: 'OmniCart adopts clean CQRS with event-driven async messaging over RabbitMQ, fast in-memory Redis state caching, and responsive Angular Standalone Single-File Components.',
       mermaidDiagram: `graph TB
-  Client["Web Browser and Client Applications"] --> Gateway["Yarp API Gateway and Reverse Proxy"]
-  Gateway --> OrderSvc["Order Processing Service (.NET 9 API)"]
-  Gateway --> BasketSvc["Shopping Basket Service (.NET 9 API)"]
-  Gateway --> CatalogSvc["Catalog and Inventory Service"]
-  OrderSvc --> RabbitMQ["RabbitMQ Message Bus and Events"]
-  BasketSvc --> Redis["Redis In-Memory State Cache"]
-  OrderSvc --> SqlDB["PostgreSQL / SQL Database"]
-  RabbitMQ --> PaymentWorker["Payment Settlement Worker"]`,
+  Client["Web Browser and Client Applications"] --> Gateway["Yarp API Gateway and Reverse Proxy"];
+  Gateway --> OrderSvc["Order Processing Service (.NET 9 API)"];
+  Gateway --> BasketSvc["Shopping Basket Service (.NET 9 API)"];
+  Gateway --> CatalogSvc["Catalog and Inventory Service"];
+  OrderSvc --> RabbitMQ["RabbitMQ Message Bus and Events"];
+  BasketSvc --> Redis["Redis In-Memory State Cache"];
+  OrderSvc --> SqlDB["PostgreSQL / SQL Database"];
+  RabbitMQ --> PaymentWorker["Payment Settlement Worker"];`,
       components: [
         {
           name: 'YARP API Gateway',
