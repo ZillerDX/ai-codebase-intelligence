@@ -1,7 +1,8 @@
 # CodePulse — Autonomous AI Codebase Intelligence & Architecture Telemetry Platform
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-10b981?style=for-the-badge&logo=github)](https://zillerdx.github.io/ai-codebase-intelligence/)
-[![CI/CD Pipeline](https://img.shields.io/github/actions/workflow/status/ZillerDX/ai-codebase-intelligence/deploy-pages.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=CI%2FCD)](https://github.com/ZillerDX/ai-codebase-intelligence/actions)
+[![Backend CI](https://img.shields.io/github/actions/workflow/status/ZillerDX/ai-codebase-intelligence/backend-ci.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=Backend%20CI)](https://github.com/ZillerDX/ai-codebase-intelligence/actions/workflows/backend-ci.yml)
+[![Pages Deploy](https://img.shields.io/github/actions/workflow/status/ZillerDX/ai-codebase-intelligence/deploy-pages.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=Pages%20Deploy)](https://github.com/ZillerDX/ai-codebase-intelligence/actions/workflows/deploy-pages.yml)
 [![Backend](https://img.shields.io/badge/.NET-10.0%20LTS%20C%23-512bd4?style=for-the-badge&logo=dotnet)](https://dotnet.microsoft.com/)
 [![Frontend](https://img.shields.io/badge/Angular-19%20Standalone-dd0031?style=for-the-badge&logo=angular)](https://angular.dev/)
 [![AI Engine](https://img.shields.io/badge/Google-Gemini%20Flash-4285f4?style=for-the-badge&logo=google)](https://ai.google.dev/)
@@ -20,8 +21,8 @@
 | **1. Who (Target Audience)** | Principal Architects, Staff Engineers, Engineering Leads, DevOps/Platform Teams, and Security Auditors overseeing complex distributed microservices and monorepos. |
 | **2. Problem** | Modern architectures suffer from opaque dependency graphs, silent architectural drift, risky pull requests with unknown downstream blast radii, untracked technical debt, and high developer cognitive fatigue during manual code reviews. |
 | **3. Solution** | A dual-mode intelligent telemetry cockpit combining static AST heuristics and Google Gemini Flash neural analysis with zero-leak proxying, dynamic vector visualizations (pan/zoom), and serverless browser storage. |
-| **4. Features** | Dynamic 3-axis/8-axis radar cockpits, interactive Mermaid system topologies with pan & zoom (0.5x–3.5x), AI Blast Radius risk simulation, security smell scanner, auto-generated sequence flow documentation, technical debt ROI roadmap, and 1-click GitHub repository import. |
-| **5. Tech Stack** | **Backend**: C# .NET 10 LTS Minimal Web API, System.Text.Json, HttpClientFactory, xUnit.<br>**Frontend**: Angular 19 Standalone Single-File Components (SFC), fine-grained Signals, Mermaid.js, Vitest.<br>**AI/Cloud**: Google Gemini Flash Neural Engine, GitHub REST API v3, GitHub Pages, GitHub Actions CI/CD. |
+| **4. Features** | Symmetrical 2x2 dynamic bento grid (3-axis & 8-axis radar cockpits, interactive donut severity breakdown, responsive suggestions matrix), interactive Mermaid system topologies with pan & zoom (0.5x–3.5x), AI Blast Radius risk simulation, security smell scanner, auto-generated sequence flow documentation, technical debt ROI roadmap, and 1-click GitHub repository import. |
+| **5. Tech Stack** | **Backend**: C# .NET 10 LTS Minimal Web API, C# 14, System.Text.Json, HttpClientFactory, xUnit.<br>**Frontend**: Angular 19 Standalone Single-File Components (SFC), fine-grained Signals, Mermaid.js, Vitest.<br>**AI/Cloud**: Google Gemini Flash Neural Engine, GitHub REST API v3, GitHub Pages, GitHub Actions CI/CD (Least-Privilege). |
 | **6. Architecture** | Dual-Mode Hybrid Architecture (Local Enterprise Mode with .NET 10 LTS API + Gemini AI proxy vs. Standalone Serverless Mode on GitHub Pages with Browser Storage and client-side Git Tree parsing). |
 | **7. Demo** | **Live Deployment**: [https://zillerdx.github.io/ai-codebase-intelligence/](https://zillerdx.github.io/ai-codebase-intelligence/) (100% functional, 0 console errors). |
 
@@ -205,6 +206,7 @@ erDiagram
 ai-codebase-intelligence/
 ├── .github/
 │   └── workflows/
+│       ├── backend-ci.yml               # Automated .NET 10 LTS compilation & test CI (Least-Privilege)
 │       └── deploy-pages.yml             # Automated CI/CD deployment to GitHub Pages (Node 22)
 ├── .gitignore                           # Zero-leak exclusions (.NET, Node, secrets)
 ├── LICENSE                              # MIT Open-Source License
@@ -279,10 +281,10 @@ The codebase undergoes continuous validation across 5 quality gates. Below are p
 
 | Tier | Framework | Test File | Passed | Failed | Duration | Exit Code |
 | :--- | :--- | :--- | :---: | :---: | :---: | :---: |
-| **Backend** | .NET 10 LTS xUnit | `AnalyzerServiceTests.cs` | **4** | **0** | 562 ms | `0` |
-| **Frontend** | Angular 19 Vitest | `app.spec.ts` | **3** | **0** | 840 ms | `0` |
+| **Backend** | .NET 10 LTS xUnit | `AnalyzerServiceTests.cs` | **4** | **0** | 405 ms | `0` |
+| **Frontend** | Angular 19 Vitest | `app.spec.ts` | **3** | **0** | 462 ms | `0` |
 | **Build (API)** | MSBuild (.NET 10 LTS) | `CodebaseIntelligence.Api.csproj` | **Clean** | **0 Warnings, 0 Errors** | 5.79 s | `0` |
-| **Build (SPA)** | Angular CLI 19 | `@angular/build:application` | **Bundle Clean** | **0 Errors** | 24.38 s | `0` |
+| **Build (SPA)** | Angular CLI 19 | `@angular/build:application` | **Bundle Clean** | **0 Errors** | 18.54 s | `0` |
 | **Live Browser** | Playwright Headless | `https://zillerdx.github.io/ai-codebase-intelligence/` | **Verified** | **0 Uncaught Errors** | Clean | `0` |
 
 ### 5.2 Interactive REST API Specification
