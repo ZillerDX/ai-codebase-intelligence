@@ -517,7 +517,7 @@
   gap: 14px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 992px) {
   .bento-row-two {
     grid-template-columns: 1fr;
   }
@@ -643,7 +643,7 @@
 /* Bento Row Bottom (Stacked Bar + Category Radar) */
 .bento-row-bottom {
   display: grid;
-  grid-template-columns: 1.25fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
 
@@ -662,14 +662,21 @@
 
 .stacked-bar-row {
   display: grid;
-  grid-template-columns: 180px 48px 1fr;
+  grid-template-columns: 135px 48px 1fr;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   font-size: 12px;
   padding: 4px 8px;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.15s ease;
+}
+
+@media (max-width: 576px) {
+  .stacked-bar-row {
+    grid-template-columns: 110px 42px 1fr;
+    gap: 8px;
+  }
 }
 
 .stacked-bar-row:hover {
