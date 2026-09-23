@@ -26,7 +26,7 @@ public class CodeAnalyzerService : ICodeAnalyzerService
         {
             Id = "ecommerce-microservices",
             Name = "OmniCart Microservices Platform",
-            Description = "Distributed e-commerce suite built with C# .NET 9, Angular 19, RabbitMQ, PostgreSQL and Redis.",
+            Description = "Distributed e-commerce suite built with C# .NET 10 LTS, Angular 19, RabbitMQ, PostgreSQL and Redis.",
             Languages = new() { "C#", "TypeScript", "SQL", "Docker", "HTML/CSS" },
             TotalFiles = 184,
             TotalLinesOfCode = 42800,
@@ -63,7 +63,7 @@ public class CodeAnalyzerService : ICodeAnalyzerService
             "src/Workers/EmailNotificationWorker.cs"
         }, @"
 Project: OmniCart Microservices Platform
-Stack: C# .NET 9 Web API, Angular 19 Standalone, Entity Framework Core, PostgreSQL, Redis, RabbitMQ
+Stack: C# .NET 10 LTS Web API, Angular 19 Standalone, Entity Framework Core, PostgreSQL, Redis, RabbitMQ
 Architecture: Clean Architecture + CQRS (MediatR) + Domain-Driven Design
 Key Modules:
 - src/Api/Controllers/CheckoutController.cs: Receives checkout commands, dispatches CreateOrderCommand via MediatR.

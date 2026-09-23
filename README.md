@@ -2,7 +2,7 @@
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-10b981?style=for-the-badge&logo=github)](https://zillerdx.github.io/ai-codebase-intelligence/)
 [![CI/CD Pipeline](https://img.shields.io/github/actions/workflow/status/ZillerDX/ai-codebase-intelligence/deploy-pages.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=CI%2FCD)](https://github.com/ZillerDX/ai-codebase-intelligence/actions)
-[![Backend](https://img.shields.io/badge/.NET-9.0%20C%23-512bd4?style=for-the-badge&logo=dotnet)](https://dotnet.microsoft.com/)
+[![Backend](https://img.shields.io/badge/.NET-10.0%20LTS%20C%23-512bd4?style=for-the-badge&logo=dotnet)](https://dotnet.microsoft.com/)
 [![Frontend](https://img.shields.io/badge/Angular-19%20Standalone-dd0031?style=for-the-badge&logo=angular)](https://angular.dev/)
 [![AI Engine](https://img.shields.io/badge/Google-Gemini%20Flash-4285f4?style=for-the-badge&logo=google)](https://ai.google.dev/)
 [![Storage](https://img.shields.io/badge/Client%20Storage-IndexedDB%20%2F%20LocalStorage-f59e0b?style=for-the-badge)](https://developer.mozilla.org/)
@@ -21,8 +21,8 @@
 | **2. Problem** | Modern architectures suffer from opaque dependency graphs, silent architectural drift, risky pull requests with unknown downstream blast radii, untracked technical debt, and high developer cognitive fatigue during manual code reviews. |
 | **3. Solution** | A dual-mode intelligent telemetry cockpit combining static AST heuristics and Google Gemini Flash neural analysis with zero-leak proxying, dynamic vector visualizations (pan/zoom), and serverless browser storage. |
 | **4. Features** | Dynamic 3-axis/8-axis radar cockpits, interactive Mermaid system topologies with pan & zoom (0.5x–3.5x), AI Blast Radius risk simulation, security smell scanner, auto-generated sequence flow documentation, technical debt ROI roadmap, and 1-click GitHub repository import. |
-| **5. Tech Stack** | **Backend**: C# .NET 9 Minimal Web API, System.Text.Json, HttpClientFactory, xUnit.<br>**Frontend**: Angular 19 Standalone Single-File Components (SFC), fine-grained Signals, Mermaid.js, Vitest.<br>**AI/Cloud**: Google Gemini Flash Neural Engine, GitHub REST API v3, GitHub Pages, GitHub Actions CI/CD. |
-| **6. Architecture** | Dual-Mode Hybrid Architecture (Local Enterprise Mode with .NET 9 API + Gemini AI proxy vs. Standalone Serverless Mode on GitHub Pages with Browser Storage and client-side Git Tree parsing). |
+| **5. Tech Stack** | **Backend**: C# .NET 10 LTS Minimal Web API, System.Text.Json, HttpClientFactory, xUnit.<br>**Frontend**: Angular 19 Standalone Single-File Components (SFC), fine-grained Signals, Mermaid.js, Vitest.<br>**AI/Cloud**: Google Gemini Flash Neural Engine, GitHub REST API v3, GitHub Pages, GitHub Actions CI/CD. |
+| **6. Architecture** | Dual-Mode Hybrid Architecture (Local Enterprise Mode with .NET 10 LTS API + Gemini AI proxy vs. Standalone Serverless Mode on GitHub Pages with Browser Storage and client-side Git Tree parsing). |
 | **7. Demo** | **Live Deployment**: [https://zillerdx.github.io/ai-codebase-intelligence/](https://zillerdx.github.io/ai-codebase-intelligence/) (100% functional, 0 console errors). |
 
 ---
@@ -88,7 +88,7 @@ graph TB
     ApiGateway{"Local Backend Active?"}
   end
 
-  subgraph LocalBackend[".NET 9 Minimal Web API (Port 5080)"]
+  subgraph LocalBackend[".NET 10 LTS Minimal Web API (Port 5080)"]
     Controller["Analysis Controller"]
     Analyzer["Code Analyzer Service (AST & Trees)"]
     GeminiSvc["Gemini Flash Neural Service"]
@@ -126,7 +126,7 @@ sequenceDiagram
   actor Architect as Staff Engineer / Architect
   participant WebApp as Angular 19 SPA (Client)
   participant LocalStore as Browser Storage Cache
-  participant BackendAPI as .NET 9 API (Optional)
+  participant BackendAPI as .NET 10 LTS API (Optional)
   participant GitHub as GitHub Git Trees API
   participant Gemini as Gemini AI Engine
 
@@ -218,7 +218,7 @@ ai-codebase-intelligence/
 │       ├── 04-fullscreen-topology-viewer.png
 │       └── 05-git-repository-import.png
 │
-├── backend/                             # .NET 9 Minimal Web API & Microservice Core
+├── backend/                             # .NET 10 LTS Minimal Web API & Microservice Core
 │   ├── CodebaseIntelligence.Api/
 │   │   ├── Controllers/
 │   │   │   └── AnalysisController.cs    # REST endpoints for summary, impact, docs, debt
@@ -233,7 +233,7 @@ ai-codebase-intelligence/
 │   │   │   └── GitHubService.cs         # Recursive Git tree fetcher and language detector
 │   │   ├── Properties/
 │   │   │   └── launchSettings.json      # Local development port definitions (5080)
-│   │   ├── Program.cs                   # .NET 9 Minimal API bootstrap & CORS policy
+│   │   ├── Program.cs                   # .NET 10 LTS Minimal API bootstrap & CORS policy
 │   │   ├── CodebaseIntelligence.Api.csproj
 │   │   ├── appsettings.json             # Git-tracked public configuration template
 │   │   └── appsettings.local.json       # Git-ignored local secret store (Zero-Leak)
@@ -279,15 +279,15 @@ The codebase undergoes continuous validation across 5 quality gates. Below are p
 
 | Tier | Framework | Test File | Passed | Failed | Duration | Exit Code |
 | :--- | :--- | :--- | :---: | :---: | :---: | :---: |
-| **Backend** | .NET 9 xUnit | `AnalyzerServiceTests.cs` | **4** | **0** | 509 ms | `0` |
+| **Backend** | .NET 10 LTS xUnit | `AnalyzerServiceTests.cs` | **4** | **0** | 562 ms | `0` |
 | **Frontend** | Angular 19 Vitest | `app.spec.ts` | **3** | **0** | 840 ms | `0` |
-| **Build (API)** | MSBuild (.NET 9) | `CodebaseIntelligence.Api.csproj` | **Clean** | **0 Warnings, 0 Errors** | 2.56 s | `0` |
+| **Build (API)** | MSBuild (.NET 10 LTS) | `CodebaseIntelligence.Api.csproj` | **Clean** | **0 Warnings, 0 Errors** | 5.79 s | `0` |
 | **Build (SPA)** | Angular CLI 19 | `@angular/build:application` | **Bundle Clean** | **0 Errors** | 24.38 s | `0` |
 | **Live Browser** | Playwright Headless | `https://zillerdx.github.io/ai-codebase-intelligence/` | **Verified** | **0 Uncaught Errors** | Clean | `0` |
 
 ### 5.2 Interactive REST API Specification
 
-The local .NET 9 Web API exposes a fully documented OpenAPI specification on `http://localhost:5080/openapi/v1.json`:
+The local .NET 10 LTS Web API exposes a fully documented OpenAPI specification on `http://localhost:5080/openapi/v1.json`:
 
 ```text
 GET  /api/analysis/samples                  # List pre-indexed codebase reference projects
@@ -321,7 +321,7 @@ GET  /api/analysis/github/popular-templates # Curated open-source 1-click import
 ## 7. Local Setup & Development Guide
 
 ### Prerequisites
-- **.NET 9 SDK**: [Download .NET 9](https://dotnet.microsoft.com/download/dotnet/9.0)
+- **.NET 10 SDK**: [Download .NET 10](https://dotnet.microsoft.com/download/dotnet/10.0)
 - **Node.js**: `v22.x` recommended (`v20.x` supported) ([Download Node.js](https://nodejs.org/))
 - **Angular CLI**: Install globally via `npm install -g @angular/cli@19`
 
@@ -343,7 +343,7 @@ To run with live Google Gemini AI capabilities locally:
 }
 ```
 
-### Step 3: Run the .NET 9 Backend
+### Step 3: Run the .NET 10 LTS Backend
 ```powershell
 cd backend/CodebaseIntelligence.Api
 dotnet restore
@@ -362,7 +362,7 @@ npm start
 
 ### Step 5: Execute Automated Test Suites
 ```powershell
-# Run backend tests (.NET 9)
+# Run backend tests (.NET 10 LTS)
 cd backend/CodebaseIntelligence.Api.Tests
 dotnet test --nologo -v q
 

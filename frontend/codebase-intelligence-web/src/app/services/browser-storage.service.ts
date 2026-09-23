@@ -371,7 +371,7 @@ export class BrowserStorageService {
       ],
       techStack: {
         'Languages': project.languages.join(', '),
-        'Framework': isDotNet ? '.NET 9 C#' : (isAngular ? 'Angular 19 Standalone' : 'Modern Engine'),
+        'Framework': isDotNet ? '.NET 10 LTS C#' : (isAngular ? 'Angular 19 Standalone' : 'Modern Engine'),
         'Storage': 'Browser Storage + Redis / Relational Engine',
         'Telemetry': 'Real-Time Git Tree Scanner'
       }
@@ -677,12 +677,12 @@ export class BrowserStorageService {
   private getDefaultArchitecture(projectId: string): ArchitectureOverviewDto {
     return {
       projectId,
-      architecturePattern: 'Distributed Microservices (.NET 9 + Angular Standalone)',
+      architecturePattern: 'Distributed Microservices (.NET 10 LTS + Angular Standalone)',
       summary: 'OmniCart adopts clean CQRS with event-driven async messaging over RabbitMQ, fast in-memory Redis state caching, and responsive Angular Standalone Single-File Components.',
       mermaidDiagram: `graph TB
   Client["Web Browser and Client Applications"] --> Gateway["Yarp API Gateway and Reverse Proxy"];
-  Gateway --> OrderSvc["Order Processing Service (.NET 9 API)"];
-  Gateway --> BasketSvc["Shopping Basket Service (.NET 9 API)"];
+  Gateway --> OrderSvc["Order Processing Service (.NET 10 LTS API)"];
+  Gateway --> BasketSvc["Shopping Basket Service (.NET 10 LTS API)"];
   Gateway --> CatalogSvc["Catalog and Inventory Service"];
   OrderSvc --> RabbitMQ["RabbitMQ Message Bus and Events"];
   BasketSvc --> Redis["Redis In-Memory State Cache"];
@@ -719,7 +719,7 @@ export class BrowserStorageService {
         }
       ],
       techStack: {
-        'Backend Framework': '.NET 9 C# (Minimal APIs + Controllers)',
+        'Backend Framework': '.NET 10 LTS C# (Minimal APIs + Controllers)',
         'Frontend Framework': 'Angular 19 (Standalone SFC + Signals)',
         'Messaging': 'RabbitMQ Event Bus with MassTransit',
         'Cache': 'Distributed Redis Cache',
@@ -819,7 +819,7 @@ export class BrowserStorageService {
   actor Customer as Online Shopper
   participant Browser as Angular 19 Web SPA
   participant Gateway as YARP API Gateway
-  participant OrderSvc as Order Service (.NET 9)
+  participant OrderSvc as Order Service (.NET 10 LTS)
   participant BasketSvc as Basket Service
   participant Redis as Redis Cache
   participant MessageBus as RabbitMQ Bus

@@ -1,0 +1,41 @@
+name: Backend CI (.NET 10 LTS)
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore Backend Dependencies
+        working-directory: backend
+        run: dotnet restore CodebaseIntelligence.Api/CodebaseIntelligence.Api.csproj
+
+      - name: Build API Project
+        working-directory: backend
+        run: dotnet build CodebaseIntelligence.Api/CodebaseIntelligence.Api.csproj --nologo -clp:ErrorsOnly
+
+      - name: Build and Run Tests
+        working-directory: backend
+        run: dotnet test CodebaseIntelligence.Api.Tests/CodebaseIntelligence.Api.Tests.csproj --nologo -v q
