@@ -342,6 +342,7 @@ export class BrowserStorageService {
   AppCore --> EventBus["Message Bus / Async Broker"]`;
 
     return {
+      source: 'heuristic',
       projectId: project.id,
       architecturePattern: pattern,
       summary: `${project.name} exhibits a ${pattern}. The repository tree consists of ${project.totalFiles} verified files across ${project.languages.join(', ')}.`,
@@ -431,6 +432,7 @@ export class BrowserStorageService {
     const targetC = sampleFiles[2] || 'src/app/api.service.ts';
 
     return {
+      source: 'heuristic',
       projectId: project.id,
       totalIssues: 7,
       criticalCount: 1,
@@ -476,6 +478,7 @@ export class BrowserStorageService {
 
   private synthesizeDocs(project: CodebaseProject, files: string[]): DocumentationReportDto {
     return {
+      source: 'heuristic',
       projectId: project.id,
       systemOverview: `# ${project.name}\n\nAutomated real-time documentation generated from repository structure. The codebase contains ${project.totalFiles} verified files across ${project.languages.join(', ')}.`,
       endpoints: [
@@ -534,6 +537,7 @@ export class BrowserStorageService {
     const f3 = files[2] || 'src/app/app.ts';
 
     return {
+      source: 'heuristic',
       projectId: project.id,
       debtScore: 78,
       estimatedRemediationHours: 24,
@@ -676,6 +680,7 @@ export class BrowserStorageService {
 
   private getDefaultArchitecture(projectId: string): ArchitectureOverviewDto {
     return {
+      source: 'sample',
       projectId,
       architecturePattern: 'Distributed Microservices (.NET 10 LTS + Angular Standalone)',
       summary: 'OmniCart adopts clean CQRS with event-driven async messaging over RabbitMQ, fast in-memory Redis state caching, and responsive Angular Standalone Single-File Components.',
@@ -730,6 +735,7 @@ export class BrowserStorageService {
 
   private getDefaultSecurity(projectId: string): SecuritySmellReportDto {
     return {
+      source: 'sample',
       projectId,
       totalIssues: 8,
       criticalCount: 2,
@@ -786,6 +792,7 @@ export class BrowserStorageService {
 
   private getDefaultDocs(projectId: string): DocumentationReportDto {
     return {
+      source: 'sample',
       projectId,
       systemOverview: '# OmniCart Microservices Architecture\n\nEnterprise distributed architecture with event-driven CQRS, Redis distributed caching, and reactive Angular 19 client.',
       endpoints: [
@@ -846,6 +853,7 @@ export class BrowserStorageService {
 
   private getDefaultDebt(projectId: string): TechnicalDebtReportDto {
     return {
+      source: 'sample',
       projectId,
       debtScore: 78,
       estimatedRemediationHours: 24,

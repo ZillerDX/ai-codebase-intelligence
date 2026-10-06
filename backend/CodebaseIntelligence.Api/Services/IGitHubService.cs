@@ -14,10 +14,12 @@ public record GitHubRepoMetadata(
     string HtmlUrl
 );
 
+public record GitHubImportResult(CodebaseProject Project, List<string> Files);
+
 public interface IGitHubService
 {
     Task<GitHubRepoMetadata?> GetRepositoryMetadataAsync(string owner, string repo, string? token = null);
     Task<List<string>> GetRepositoryFilesAsync(string owner, string repo, string branch, string? token = null);
     Task<List<CategoryBreakdown>> EstimatePrBreakdownAsync(string owner, string repo, string? token = null);
-    Task<CodebaseProject> ImportRepositoryAsync(string repoUrlOrPath, string? token = null, string? branch = null);
+    Task<GitHubImportResult> ImportRepositoryAsync(string repoUrlOrPath, string? token = null, string? branch = null);
 }

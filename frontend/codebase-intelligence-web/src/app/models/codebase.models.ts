@@ -1,3 +1,5 @@
+export type ResultSource = 'ai' | 'fallback' | 'heuristic' | 'sample' | 'offline';
+
 export interface CodebaseProject {
   id: string;
   name: string;
@@ -46,6 +48,7 @@ export interface ArchitectureComponentDto {
 }
 
 export interface ArchitectureOverviewDto {
+  source?: ResultSource;
   projectId: string;
   architecturePattern: string;
   summary: string;
@@ -61,6 +64,7 @@ export interface ImpactAnalysisRequest {
 }
 
 export interface ImpactAnalysisResult {
+  source?: ResultSource;
   targetFile: string;
   blastRadiusLevel: 'Low' | 'Medium' | 'High' | 'Critical';
   affectedComponents: string[];
@@ -84,6 +88,7 @@ export interface CodeIssueItemDto {
 }
 
 export interface SecuritySmellReportDto {
+  source?: ResultSource;
   projectId: string;
   totalIssues: number;
   criticalCount: number;
@@ -102,6 +107,7 @@ export interface ApiEndpointDocDto {
 }
 
 export interface DocumentationReportDto {
+  source?: ResultSource;
   projectId: string;
   systemOverview: string;
   endpoints: ApiEndpointDocDto[];
@@ -117,6 +123,7 @@ export interface RefactorTargetDto {
 }
 
 export interface TechnicalDebtReportDto {
+  source?: ResultSource;
   projectId: string;
   debtScore: number;
   estimatedRemediationHours: number;

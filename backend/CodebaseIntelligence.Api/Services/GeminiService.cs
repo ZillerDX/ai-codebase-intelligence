@@ -70,11 +70,12 @@ public class GeminiService : IGeminiService
 
         foreach (var candidateModel in candidateModels)
         {
-            var endpoint = $"https://generativelanguage.googleapis.com/v1beta/models/{candidateModel}:generateContent?key={_apiKey}";
+            var endpoint = $"https://generativelanguage.googleapis.com/v1beta/models/{candidateModel}:generateContent";
             using var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
             {
                 Content = new StringContent(payloadString, Encoding.UTF8, "application/json")
             };
+            request.Headers.Add("x-goog-api-key", _apiKey);
 
             try
             {
@@ -154,7 +155,7 @@ public class GeminiService : IGeminiService
             var result = JsonSerializer.Deserialize<ImpactAnalysisResult>(CleanJson(rawResult), options);
             if (result != null && !string.IsNullOrWhiteSpace(result.SeniorDevAdvice))
             {
-                return result with { TargetFile = targetFile };
+                return result with { TargetFile = targetFile, Source = ResultSource.Ai };
             }
         }
         catch (Exception ex)
@@ -164,6 +165,7 @@ public class GeminiService : IGeminiService
 
         return new ImpactAnalysisResult
         {
+            Source = ResultSource.Fallback,
             TargetFile = targetFile,
             BlastRadiusLevel = "High",
             AffectedComponents = new() { "OrderService", "PaymentGatewayAdapter", "CheckoutApiController", "InventoryWorker" },
@@ -205,7 +207,7 @@ public class GeminiService : IGeminiService
             var result = JsonSerializer.Deserialize<ArchitectureOverviewDto>(CleanJson(rawResult), options);
             if (result != null && !string.IsNullOrWhiteSpace(result.ArchitecturePattern))
             {
-                return result with { ProjectId = projectId };
+                return result with { ProjectId = projectId, Source = ResultSource.Ai };
             }
         }
         catch (Exception ex)
@@ -215,6 +217,7 @@ public class GeminiService : IGeminiService
 
         return new ArchitectureOverviewDto
         {
+            Source = ResultSource.Fallback,
             ProjectId = projectId,
             ArchitecturePattern = "Clean Architecture / Domain-Driven Design",
             MermaidDiagram = "graph TB\n  subgraph Presentation[\"Presentation Layer\"]\n    UI[\"Angular 19 SPA\"]\n    API[\"ASP.NET Core Web API Controllers\"]\n  end\n  subgraph Application[\"Application Core\"]\n    Commands[\"Command Handlers\"]\n    Queries[\"Query Handlers\"]\n    Validators[\"Fluent Validators\"]\n  end\n  subgraph Domain[\"Domain Layer\"]\n    Entities[\"Aggregates and Entities\"]\n    ValueObjects[\"Value Objects\"]\n    DomainEvents[\"Domain Events\"]\n  end\n  subgraph Infrastructure[\"Infrastructure Layer\"]\n    EF[\"EF Core and PostgreSQL\"]\n    Redis[\"Redis Cache\"]\n    GeminiClient[\"Gemini AI Client\"]\n  end\n  UI --> API\n  API --> Commands\n  API --> Queries\n  Commands --> Entities\n  Queries --> EF\n  Commands --> EF\n  Commands --> GeminiClient",
@@ -229,7 +232,7 @@ public class GeminiService : IGeminiService
             TechStack = new Dictionary<string, string>
             {
                 ["Frontend"] = "Angular 19 Standalone + Tailwind Dark Bento",
-                ["Backend"] = "ASP.NET Core 9.0 Web API (C#)",
+                ["Backend"] = "ASP.NET Core 10 Web API (C#)",
                 ["AI Engine"] = "Google Gemini 2.5 Flash",
                 ["Persistence"] = "Entity Framework Core + PostgreSQL",
                 ["Cache & Messaging"] = "Redis + RabbitMQ"
@@ -257,7 +260,7 @@ public class GeminiService : IGeminiService
             var result = JsonSerializer.Deserialize<SecuritySmellReportDto>(CleanJson(rawResult), options);
             if (result != null && result.Issues.Count > 0)
             {
-                return result with { ProjectId = projectId };
+                return result with { ProjectId = projectId, Source = ResultSource.Ai };
             }
         }
         catch (Exception ex)
@@ -267,6 +270,7 @@ public class GeminiService : IGeminiService
 
         return new SecuritySmellReportDto
         {
+            Source = ResultSource.Fallback,
             ProjectId = projectId,
             TotalIssues = 8,
             CriticalCount = 2,
@@ -304,7 +308,7 @@ public class GeminiService : IGeminiService
             var result = JsonSerializer.Deserialize<DocumentationReportDto>(CleanJson(rawResult), options);
             if (result != null && result.Endpoints.Count > 0)
             {
-                return result with { ProjectId = projectId };
+                return result with { ProjectId = projectId, Source = ResultSource.Ai };
             }
         }
         catch (Exception ex)
@@ -314,6 +318,7 @@ public class GeminiService : IGeminiService
 
         return new DocumentationReportDto
         {
+            Source = ResultSource.Fallback,
             ProjectId = projectId,
             SystemOverview = "### System Overview\nDistributed transaction management platform designed using Event-Driven Architecture, optimized for high concurrency, built-in observability, and automated AI diagnostics.",
             Endpoints = new List<ApiEndpointDocDto>
@@ -347,7 +352,7 @@ public class GeminiService : IGeminiService
             var result = JsonSerializer.Deserialize<TechnicalDebtReportDto>(CleanJson(rawResult), options);
             if (result != null && result.RefactorTargets.Count > 0)
             {
-                return result with { ProjectId = projectId };
+                return result with { ProjectId = projectId, Source = ResultSource.Ai };
             }
         }
         catch (Exception ex)
@@ -357,6 +362,7 @@ public class GeminiService : IGeminiService
 
         return new TechnicalDebtReportDto
         {
+            Source = ResultSource.Fallback,
             ProjectId = projectId,
             DebtScore = 82,
             EstimatedRemediationHours = 38.5,

@@ -10,7 +10,8 @@ import {
   SecuritySmellReportDto,
   DocumentationReportDto,
   TechnicalDebtReportDto,
-  GitHubRepoSuggestion
+  GitHubRepoSuggestion,
+  ResultSource
 } from './models/codebase.models';
 import mermaid from 'mermaid';
 
@@ -439,7 +440,7 @@ export class App implements OnInit {
     mermaid.initialize({
       startOnLoad: false,
       suppressErrorRendering: true,
-      securityLevel: 'loose',
+      securityLevel: 'strict',
       theme: 'dark',
       themeVariables: {
         darkMode: true,
@@ -598,6 +599,17 @@ export class App implements OnInit {
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
+  }
+
+  sourceLabel(source?: ResultSource): string {
+    switch (source) {
+      case 'ai': return 'AI-generated';
+      case 'fallback': return 'Sample fallback - AI unavailable';
+      case 'heuristic': return 'Heuristic estimate - no AI';
+      case 'sample': return 'Built-in sample data';
+      case 'offline': return 'Offline sample - backend unreachable';
+      default: return '';
+    }
   }
 
   async renderMermaidDiagrams() {

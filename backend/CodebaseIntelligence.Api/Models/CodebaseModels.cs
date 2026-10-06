@@ -1,5 +1,11 @@
 namespace CodebaseIntelligence.Api.Models;
 
+public static class ResultSource
+{
+    public const string Ai = "ai";
+    public const string Fallback = "fallback";
+}
+
 public record CodebaseProject
 {
     public string Id { get; init; } = string.Empty;
@@ -49,6 +55,7 @@ public record ArchitectureComponentDto(string Name, string Layer, string Descrip
 
 public record ArchitectureOverviewDto
 {
+    public string Source { get; init; } = ResultSource.Ai;
     public string ProjectId { get; init; } = string.Empty;
     public string ArchitecturePattern { get; init; } = string.Empty;
     public string Summary { get; init; } = string.Empty;
@@ -61,6 +68,7 @@ public record ImpactAnalysisRequest(string ProjectId, string TargetFile, string 
 
 public record ImpactAnalysisResult
 {
+    public string Source { get; init; } = ResultSource.Ai;
     public string TargetFile { get; init; } = string.Empty;
     public string BlastRadiusLevel { get; init; } = "Medium"; // Low, Medium, High, Critical
     public List<string> AffectedComponents { get; init; } = new();
@@ -85,6 +93,7 @@ public record CodeIssueItemDto(
 
 public record SecuritySmellReportDto
 {
+    public string Source { get; init; } = ResultSource.Ai;
     public string ProjectId { get; init; } = string.Empty;
     public int TotalIssues { get; init; }
     public int CriticalCount { get; init; }
@@ -104,6 +113,7 @@ public record ApiEndpointDocDto(
 
 public record DocumentationReportDto
 {
+    public string Source { get; init; } = ResultSource.Ai;
     public string ProjectId { get; init; } = string.Empty;
     public string SystemOverview { get; init; } = string.Empty;
     public List<ApiEndpointDocDto> Endpoints { get; init; } = new();
@@ -115,6 +125,7 @@ public record RefactorTargetDto(string File, string Reason, string Priority, dou
 
 public record TechnicalDebtReportDto
 {
+    public string Source { get; init; } = ResultSource.Ai;
     public string ProjectId { get; init; } = string.Empty;
     public int DebtScore { get; init; } // e.g. 78/100 (Higher is healthier)
     public double EstimatedRemediationHours { get; init; }

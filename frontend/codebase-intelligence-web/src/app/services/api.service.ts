@@ -9,7 +9,8 @@ import {
   SecuritySmellReportDto,
   DocumentationReportDto,
   TechnicalDebtReportDto,
-  GitHubRepoSuggestion
+  GitHubRepoSuggestion,
+  ResultSource
 } from '../models/codebase.models';
 import { BrowserStorageService } from './browser-storage.service';
 
@@ -59,7 +60,7 @@ export class ApiService {
       return of(this.storage.getArchitecture(projectId));
     }
     return this.http.get<ArchitectureOverviewDto>(`${this.baseUrl}/${projectId}/architecture`).pipe(
-      catchError(() => of(this.storage.getArchitecture(projectId)))
+      catchError(() => of(this.offline(this.storage.getArchitecture(projectId))))
     );
   }
 
@@ -72,7 +73,7 @@ export class ApiService {
       targetFile,
       proposedChange
     }).pipe(
-      catchError(() => of(this.synthesizeOfflineImpact(targetFile, proposedChange)))
+      catchError(() => of(this.offline(this.synthesizeOfflineImpact(targetFile, proposedChange))))
     );
   }
 
@@ -81,7 +82,7 @@ export class ApiService {
       return of(this.storage.getSecuritySmells(projectId));
     }
     return this.http.get<SecuritySmellReportDto>(`${this.baseUrl}/${projectId}/security-smells`).pipe(
-      catchError(() => of(this.storage.getSecuritySmells(projectId)))
+      catchError(() => of(this.offline(this.storage.getSecuritySmells(projectId))))
     );
   }
 
@@ -90,7 +91,7 @@ export class ApiService {
       return of(this.storage.getDocumentation(projectId));
     }
     return this.http.get<DocumentationReportDto>(`${this.baseUrl}/${projectId}/docs`).pipe(
-      catchError(() => of(this.storage.getDocumentation(projectId)))
+      catchError(() => of(this.offline(this.storage.getDocumentation(projectId))))
     );
   }
 
@@ -99,7 +100,7 @@ export class ApiService {
       return of(this.storage.getTechnicalDebt(projectId));
     }
     return this.http.get<TechnicalDebtReportDto>(`${this.baseUrl}/${projectId}/technical-debt`).pipe(
-      catchError(() => of(this.storage.getTechnicalDebt(projectId)))
+      catchError(() => of(this.offline(this.storage.getTechnicalDebt(projectId))))
     );
   }
 
@@ -129,6 +130,10 @@ export class ApiService {
     );
   }
 
+  private offline<T extends { source?: ResultSource }>(result: T): T {
+    return { ...result, source: 'offline' };
+  }
+
   private synthesizeOfflineImpact(targetFile: string, proposedChange: string): ImpactAnalysisResult {
     const isCritical = targetFile.includes('Repository') || 
                        targetFile.includes('Program.cs') || 
@@ -149,6 +154,7 @@ export class ApiService {
   ApiGateway --> ClientSpa["Angular SPA View Model"]`;
 
     return {
+      source: 'heuristic',
       targetFile,
       blastRadiusLevel: level,
       affectedComponents: [

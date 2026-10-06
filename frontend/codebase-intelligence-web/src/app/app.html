@@ -692,6 +692,9 @@
       <div class="section-container">
         <div class="section-hero">
           <div class="hero-badge">AI Architecture Synthesis</div>
+          @if (architectureData()?.source) {
+            <div class="source-badge" [attr.data-source]="architectureData()?.source">{{ sourceLabel(architectureData()?.source) }}</div>
+          }
           <h2>{{ architectureData()?.architecturePattern || 'Clean Architecture / Microservices' }}</h2>
           <p class="hero-desc">{{ architectureData()?.summary }}</p>
         </div>
@@ -778,6 +781,9 @@
       <div class="section-container">
         <div class="section-hero">
           <div class="hero-badge hero-badge-emerald">Predictive Blast Radius & Regression Analysis</div>
+          @if (impactResult()?.source) {
+            <div class="source-badge" [attr.data-source]="impactResult()?.source">{{ sourceLabel(impactResult()?.source) }}</div>
+          }
           <h2>AI Impact Analysis & Change Risk Modeling</h2>
           <p class="hero-desc">
             Senior AI Developer analyzes function-level blast radius, API contract breaks, database mutations, and distributed queue consumers
@@ -951,6 +957,9 @@
       <div class="section-container">
         <div class="section-hero">
           <div class="hero-badge hero-badge-danger">Static & AI Code Scanner</div>
+          @if (securityData()?.source) {
+            <div class="source-badge" [attr.data-source]="securityData()?.source">{{ sourceLabel(securityData()?.source) }}</div>
+          }
           <h2>Security Risks, Anti-Patterns & Code Smells</h2>
           <p class="hero-desc">Detect security vulnerabilities, unsafe SQL interpolations, and code anti-patterns with automated remediation snippets</p>
         </div>
@@ -1010,6 +1019,9 @@
       <div class="section-container">
         <div class="section-hero">
           <div class="hero-badge">Living Documentation</div>
+          @if (docsData()?.source) {
+            <div class="source-badge" [attr.data-source]="docsData()?.source">{{ sourceLabel(docsData()?.source) }}</div>
+          }
           <h2>Automated API Documentation & Workflow Sequences</h2>
           <p class="hero-desc">Synthesize REST API endpoints, schemas, payloads, and request sequence flows directly from codebase symbols</p>
         </div>
@@ -1091,6 +1103,9 @@
       <div class="section-container">
         <div class="section-hero">
           <div class="hero-badge hero-badge-emerald">Senior Refactor Radar</div>
+          @if (debtData()?.source) {
+            <div class="source-badge" [attr.data-source]="debtData()?.source">{{ sourceLabel(debtData()?.source) }}</div>
+          }
           <h2>Technical Debt Ledger & Remediation Roadmap</h2>
           <p class="hero-desc">Estimate accumulated technical debt and prioritized refactoring sprint roadmap to maximize developer velocity</p>
         </div>

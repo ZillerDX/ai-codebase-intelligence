@@ -1,6 +1,5 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using CodebaseIntelligence.Api.Models;
 
 namespace CodebaseIntelligence.Api.Services;
@@ -14,31 +13,6 @@ public class GitHubService : IGitHubService
     {
         _httpClient = httpClientFactory.CreateClient("GitHubClient");
         _logger = logger;
-    }
-
-    private static (string Owner, string Repo) ParseGitHubIdentifier(string input)
-    {
-        var clean = input.Trim().TrimEnd('/');
-        if (clean.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
-        {
-            clean = clean[..^4];
-        }
-
-        // Check if URL: https://github.com/owner/repo
-        var match = Regex.Match(clean, @"github\.com[:/](?<owner>[^/]+)/(?<repo>[^/]+)", RegexOptions.IgnoreCase);
-        if (match.Success)
-        {
-            return (match.Groups["owner"].Value, match.Groups["repo"].Value);
-        }
-
-        // If format is owner/repo
-        var parts = clean.Split('/');
-        if (parts.Length == 2)
-        {
-            return (parts[0], parts[1]);
-        }
-
-        throw new ArgumentException($"Invalid GitHub repository identifier: '{input}'. Expected format 'owner/repo' or 'https://github.com/owner/repo'.");
     }
 
     private HttpRequestMessage CreateGitHubRequest(HttpMethod method, string url, string? token)
@@ -57,7 +31,7 @@ public class GitHubService : IGitHubService
 
     public async Task<GitHubRepoMetadata?> GetRepositoryMetadataAsync(string owner, string repo, string? token = null)
     {
-        var url = $"https://api.github.com/repos/{owner}/{repo}";
+        var url = $"https://api.github.com/repos/{Uri.EscapeDataString(owner)}/{Uri.EscapeDataString(repo)}";
         using var req = CreateGitHubRequest(HttpMethod.Get, url, token);
 
         try
@@ -94,7 +68,7 @@ public class GitHubService : IGitHubService
 
     public async Task<List<string>> GetRepositoryFilesAsync(string owner, string repo, string branch, string? token = null)
     {
-        var url = $"https://api.github.com/repos/{owner}/{repo}/git/trees/{branch}?recursive=1";
+        var url = $"https://api.github.com/repos/{Uri.EscapeDataString(owner)}/{Uri.EscapeDataString(repo)}/git/trees/{GitHubRepoIdentifier.EscapeBranch(branch)}?recursive=1";
         using var req = CreateGitHubRequest(HttpMethod.Get, url, token);
 
         try
@@ -149,13 +123,23 @@ public class GitHubService : IGitHubService
         return Task.FromResult(list);
     }
 
-    public async Task<CodebaseProject> ImportRepositoryAsync(string repoUrlOrPath, string? token = null, string? branch = null)
+    public async Task<GitHubImportResult> ImportRepositoryAsync(string repoUrlOrPath, string? token = null, string? branch = null)
     {
-        var (owner, repo) = ParseGitHubIdentifier(repoUrlOrPath);
-        var meta = await GetRepositoryMetadataAsync(owner, repo, token);
+        var (owner, repo) = GitHubRepoIdentifier.Parse(repoUrlOrPath);
+        var requestedBranch = string.IsNullOrWhiteSpace(branch) ? null : GitHubRepoIdentifier.ValidateBranch(branch);
 
-        var activeBranch = !string.IsNullOrWhiteSpace(branch) ? branch : (meta?.DefaultBranch ?? "main");
+        var meta = await GetRepositoryMetadataAsync(owner, repo, token);
+        if (meta is null && requestedBranch is null)
+        {
+            throw new InvalidOperationException($"Repository {owner}/{repo} was not found or is not accessible (private repo, wrong name, or GitHub rate limit).");
+        }
+
+        var activeBranch = requestedBranch ?? meta!.DefaultBranch;
         var files = await GetRepositoryFilesAsync(owner, repo, activeBranch, token);
+        if (files.Count == 0)
+        {
+            throw new InvalidOperationException($"No files found in {owner}/{repo} on branch '{activeBranch}' (empty repo, wrong branch, or GitHub rate limit).");
+        }
 
         var detectedLanguages = new HashSet<string>();
         if (!string.IsNullOrWhiteSpace(meta?.Language))
@@ -183,15 +167,17 @@ public class GitHubService : IGitHubService
         var projId = $"gh-{owner.ToLowerInvariant()}-{repo.ToLowerInvariant()}";
         var totalLines = Math.Max(files.Count * 220, 15000);
 
-        return new CodebaseProject
+        var project = new CodebaseProject
         {
             Id = projId,
             Name = meta?.FullName ?? $"{owner}/{repo}",
-            Description = meta?.Description ?? $"GitHub repository {owner}/{repo} imported via Vercel-style pipeline.",
+            Description = meta?.Description ?? $"GitHub repository {owner}/{repo} imported from GitHub.",
             Languages = detectedLanguages.Count > 0 ? detectedLanguages.ToList() : new() { "C#", "TypeScript" },
-            TotalFiles = files.Count > 0 ? files.Count : 64,
+            TotalFiles = files.Count,
             TotalLinesOfCode = totalLines,
             LastAnalyzed = DateTime.UtcNow
         };
+
+        return new GitHubImportResult(project, files);
     }
 }

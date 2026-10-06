@@ -7,7 +7,7 @@ public interface ICodeAnalyzerService
 {
     List<CodebaseProject> GetSampleProjects();
     CodebaseProject? GetProject(string id);
-    HighLevelSummaryDto GetHighLevelSummary(string projectId);
+    HighLevelSummaryDto? GetHighLevelSummary(string projectId);
     string GetCodebaseContext(string projectId);
     List<string> GetFileList(string projectId);
     void RegisterProject(CodebaseProject project, List<string> files, string? context = null);
@@ -112,18 +112,19 @@ Key Modules:
 
     public CodebaseProject? GetProject(string id)
     {
-        if (_projects.TryGetValue(id, out var proj)) return proj;
-        return _projects.Values.FirstOrDefault();
+        return _projects.TryGetValue(id, out var proj) ? proj : null;
     }
 
-    public HighLevelSummaryDto GetHighLevelSummary(string projectId)
+    public HighLevelSummaryDto? GetHighLevelSummary(string projectId)
     {
         var proj = GetProject(projectId);
-        var isLegacy = proj?.Id == "legacy-crm-monolith";
-        var isGitHub = proj?.Id.StartsWith("gh-", StringComparison.OrdinalIgnoreCase) == true;
+        if (proj is null) return null;
 
-        var mergedPrs = isGitHub ? Math.Max(52, proj!.TotalFiles / 3) : (isLegacy ? 84 : 145);
-        var activeUsers = isGitHub ? Math.Max(18, proj!.TotalFiles / 6) : (isLegacy ? 42 : 86);
+        var isLegacy = proj.Id == "legacy-crm-monolith";
+        var isGitHub = proj.Id.StartsWith("gh-", StringComparison.OrdinalIgnoreCase);
+
+        var mergedPrs = isGitHub ? Math.Max(52, proj.TotalFiles / 3) : (isLegacy ? 84 : 145);
+        var activeUsers = isGitHub ? Math.Max(18, proj.TotalFiles / 6) : (isLegacy ? 42 : 86);
         var timeToCommit = isGitHub ? 2.1 : (isLegacy ? 4.2 : 1.7);
         var reviewSaved = isGitHub ? 1.5 : (isLegacy ? 0.8 : 1.2);
         var commentsPosted = isGitHub ? 540 : (isLegacy ? 890 : 645);
@@ -131,8 +132,8 @@ Key Modules:
 
         return new HighLevelSummaryDto
         {
-            ProjectId = proj?.Id ?? "ecommerce-microservices",
-            ProjectName = proj?.Name ?? "OmniCart Microservices Platform",
+            ProjectId = proj.Id,
+            ProjectName = proj.Name,
             MergedPullRequests = mergedPrs,
             ActiveUsers = activeUsers,
             MedianTimeToLastCommitHours = timeToCommit,
@@ -184,13 +185,11 @@ Key Modules:
 
     public string GetCodebaseContext(string projectId)
     {
-        if (_contexts.TryGetValue(projectId, out var ctx)) return ctx;
-        return _contexts.Values.FirstOrDefault() ?? "No codebase context available.";
+        return _contexts.TryGetValue(projectId, out var ctx) ? ctx : string.Empty;
     }
 
     public List<string> GetFileList(string projectId)
     {
-        if (_files.TryGetValue(projectId, out var list)) return list;
-        return _files.Values.FirstOrDefault() ?? new List<string>();
+        return _files.TryGetValue(projectId, out var list) ? list : new List<string>();
     }
 }
