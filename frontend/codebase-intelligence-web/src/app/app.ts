@@ -1,4 +1,15 @@
-import { Component, OnInit, inject, signal, computed, effect, HostListener, ElementRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  inject,
+  signal,
+  computed,
+  effect,
+  HostListener,
+  ElementRef,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from './services/api.service';
@@ -11,7 +22,7 @@ import {
   DocumentationReportDto,
   TechnicalDebtReportDto,
   GitHubRepoSuggestion,
-  ResultSource
+  ResultSource,
 } from './models/codebase.models';
 import mermaid from 'mermaid';
 
@@ -20,38 +31,43 @@ import mermaid from 'mermaid';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrl: './app.css',
 })
 export class App implements OnInit {
   private apiService = inject(ApiService);
 
   // Active Tab
-  activeTab = signal<'summary' | 'architecture' | 'impact' | 'security' | 'docs' | 'debt'>('summary');
+  activeTab = signal<'summary' | 'architecture' | 'impact' | 'security' | 'docs' | 'debt'>(
+    'summary',
+  );
 
   // Repositories & Custom Popover Dropdown
   projects = signal<CodebaseProject[]>([]);
   selectedProjectId = signal<string>('ecommerce-microservices');
   selectedProject = computed<CodebaseProject>(() => {
-    return this.projects().find(p => p.id === this.selectedProjectId()) 
-      || this.projects()[0]
-      || {
+    return (
+      this.projects().find((p) => p.id === this.selectedProjectId()) ||
+      this.projects()[0] || {
         id: 'ecommerce-microservices',
         name: 'OmniCart Microservices Platform',
         description: 'Reference eCommerce platform with .NET Aspire, RabbitMQ, and Redis cache.',
         languages: ['C#', 'TypeScript', 'SQL'],
         totalFiles: 1078,
         totalLinesOfCode: 142000,
-        lastAnalyzed: new Date().toISOString()
-      };
+        lastAnalyzed: new Date().toISOString(),
+      }
+    );
   });
   isRepoDropdownOpen = signal<boolean>(false);
   repoSearchQuery = signal<string>('');
   filteredProjects = computed(() => {
     const q = this.repoSearchQuery().toLowerCase().trim();
     if (!q) return this.projects();
-    return this.projects().filter(p => 
-      p.name.toLowerCase().includes(q) || 
-      (p.languages && p.languages.some(l => l.toLowerCase().includes(q)))
+    return this.projects().filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        (p.languages && p.languages.some((l) => l.toLowerCase().includes(q))),
     );
   });
 
@@ -71,11 +87,16 @@ export class App implements OnInit {
 
   timeframeMultiplier = computed(() => {
     switch (this.selectedTimeframe()) {
-      case '7D': return 0.28;
-      case '30D': return 1.0;
-      case '90D': return 2.65;
-      case 'ALL': return 6.8;
-      default: return 1.0;
+      case '7D':
+        return 0.28;
+      case '30D':
+        return 1.0;
+      case '90D':
+        return 2.65;
+      case 'ALL':
+        return 6.8;
+      default:
+        return 1.0;
     }
   });
 
@@ -135,7 +156,7 @@ export class App implements OnInit {
     const total = this.displayCommentsPosted();
     if (target === 'Critical') return `${Math.round(total * 0.15)}`;
     if (target === 'Major') return `${Math.round(total * 0.55)}`;
-    if (target === 'Minor') return `${Math.round(total * 0.30)}`;
+    if (target === 'Minor') return `${Math.round(total * 0.3)}`;
     return `${total}`;
   });
 
@@ -164,11 +185,17 @@ export class App implements OnInit {
     let nRatio = baseMin / sum;
 
     if (f === 'Critical') {
-      cRatio = 0.50; mRatio = 0.30; nRatio = 0.20;
+      cRatio = 0.5;
+      mRatio = 0.3;
+      nRatio = 0.2;
     } else if (f === 'Major') {
-      cRatio = 0.15; mRatio = 0.65; nRatio = 0.20;
+      cRatio = 0.15;
+      mRatio = 0.65;
+      nRatio = 0.2;
     } else if (f === 'Minor') {
-      cRatio = 0.15; mRatio = 0.30; nRatio = 0.55;
+      cRatio = 0.15;
+      mRatio = 0.3;
+      nRatio = 0.55;
     }
 
     const cDash = +(cRatio * this.donutCircumference).toFixed(1);
@@ -184,7 +211,7 @@ export class App implements OnInit {
       minorOffset: -(cDash + mDash),
       criticalPct: Math.round(cRatio * 100),
       majorPct: Math.round(mRatio * 100),
-      minorPct: Math.round(nRatio * 100)
+      minorPct: Math.round(nRatio * 100),
     };
   });
 
@@ -194,8 +221,8 @@ export class App implements OnInit {
     const tf = this.timeframeMultiplier();
     const f = this.focusedSeverity();
 
-    return raw.map(item => {
-      const mult = f === 'Critical' ? 0.35 : (f === 'Major' ? 0.70 : (f === 'Minor' ? 0.45 : 1.0));
+    return raw.map((item) => {
+      const mult = f === 'Critical' ? 0.35 : f === 'Major' ? 0.7 : f === 'Minor' ? 0.45 : 1.0;
       const accepted = Math.max(1, Math.round(item.accepted * tf * mult));
       const posted = Math.max(accepted, Math.round(item.posted * tf * mult));
       const acceptedPct = Math.min(100, Math.round((accepted / posted) * 100));
@@ -206,7 +233,7 @@ export class App implements OnInit {
         accepted,
         posted,
         acceptedPct,
-        remainingPct
+        remainingPct,
       };
     });
   });
@@ -231,7 +258,9 @@ export class App implements OnInit {
 
   // Impact Analysis State
   targetFile = signal<string>('src/Api/Controllers/CheckoutController.cs');
-  proposedChange = signal<string>('Refactor TotalAmount property type from double to decimal and optimize asynchronous queue worker');
+  proposedChange = signal<string>(
+    'Refactor TotalAmount property type from double to decimal and optimize asynchronous queue worker',
+  );
   impactResult = signal<ImpactAnalysisResult | null>(null);
   isAnalyzingImpact = signal<boolean>(false);
 
@@ -246,7 +275,13 @@ export class App implements OnInit {
   archZoom = signal<number>(1);
   impactZoom = signal<number>(1);
   docsZoom = signal<number>(1);
-  fullscreenDiagram = signal<{ title: string; code: string; zoom: number; panX: number; panY: number } | null>(null);
+  fullscreenDiagram = signal<{
+    title: string;
+    code: string;
+    zoom: number;
+    panX: number;
+    panY: number;
+  } | null>(null);
 
   isDragging = false;
   dragStartX = 0;
@@ -260,7 +295,7 @@ export class App implements OnInit {
   }
 
   toggleKpiCard(cardId: string) {
-    this.activeKpiCard.update(c => c === cardId ? null : cardId);
+    this.activeKpiCard.update((c) => (c === cardId ? null : cardId));
   }
 
   setFocusedSeverity(sev: 'All' | 'Critical' | 'Major' | 'Minor') {
@@ -274,7 +309,7 @@ export class App implements OnInit {
   }
 
   toggleRepoDropdown() {
-    this.isRepoDropdownOpen.update(v => !v);
+    this.isRepoDropdownOpen.update((v) => !v);
   }
 
   closeRepoDropdown() {
@@ -302,7 +337,7 @@ export class App implements OnInit {
     this.scanStageTitle.set('Connecting Git Engine & Resolving Tree...');
     this.scanLogs.set([
       `[0.05s] [REPO] Selected: ${repoName} (Branch: main)`,
-      `[0.18s] [TREE] Discovered ${totalFiles.toLocaleString()} files across ${languages}`
+      `[0.18s] [TREE] Discovered ${totalFiles.toLocaleString()} files across ${languages}`,
     ]);
 
     let step = 0;
@@ -314,26 +349,26 @@ export class App implements OnInit {
       if (step === 3) {
         this.scanStage.set(2);
         this.scanStageTitle.set('Parsing AST & Constructing Dependency Graph...');
-        this.scanLogs.update(logs => [
+        this.scanLogs.update((logs) => [
           ...logs,
           `[0.42s] [AST] Tokenized symbols, imports, and call graphs`,
-          `[0.65s] [GRAPH] Constructed distributed dependency blast radius matrix`
+          `[0.65s] [GRAPH] Constructed distributed dependency blast radius matrix`,
         ]);
       } else if (step === 7) {
         this.scanStage.set(3);
         this.scanStageTitle.set('AI Neural Engine Evaluating Smells & Security...');
-        this.scanLogs.update(logs => [
+        this.scanLogs.update((logs) => [
           ...logs,
           `[0.95s] [AI] Querying Gemini Neural Pipeline with architectural context...`,
-          `[1.25s] [BLAST-RADIUS] Calculated blast radius and regression vulnerabilities`
+          `[1.25s] [BLAST-RADIUS] Calculated blast radius and regression vulnerabilities`,
         ]);
       } else if (step === 11) {
         this.scanStage.set(4);
         this.scanStageTitle.set('Synthesizing Technical Debt Ledger & ROI Roadmap...');
-        this.scanLogs.update(logs => [
+        this.scanLogs.update((logs) => [
           ...logs,
           `[1.58s] [DEBT] Identified prioritized refactoring targets by engineering ROI`,
-          `[1.85s] [COMPLETE] Diagnostics verified. Launching executive dashboard.`
+          `[1.85s] [COMPLETE] Diagnostics verified. Launching executive dashboard.`,
         ]);
       }
 
@@ -362,7 +397,7 @@ export class App implements OnInit {
     if (this.popularTemplates().length === 0) {
       this.apiService.getPopularTemplates().subscribe({
         next: (templates) => this.popularTemplates.set(templates),
-        error: (err) => console.warn('Could not fetch templates', err)
+        error: (err) => console.warn('Could not fetch templates', err),
       });
     }
   }
@@ -379,29 +414,40 @@ export class App implements OnInit {
   importGitHubRepo() {
     const url = this.importRepoUrl().trim();
     if (!url) {
-      this.importError.set('Please provide a valid GitHub repository URL or slug, e.g. "dotnet/aspnetcore" or "facebook/react"');
+      this.importError.set(
+        'Please provide a valid GitHub repository URL or slug, e.g. "dotnet/aspnetcore" or "facebook/react"',
+      );
       return;
     }
 
     this.isImporting.set(true);
     this.importError.set(null);
 
-    this.apiService.importGitHubRepo(url, this.importToken().trim() || undefined, this.importBranch().trim() || undefined).subscribe({
-      next: (newProj) => {
-        this.projects.update(list => [newProj, ...list.filter(p => p.id !== newProj.id)]);
-        this.selectedProjectId.set(newProj.id);
-        this.isImporting.set(false);
-        this.isImportModalOpen.set(false);
-        this.importRepoUrl.set('');
-        this.importToken.set('');
-        this.triggerDeepScan();
-      },
-      error: (err) => {
-        console.error('Import failed', err);
-        this.importError.set(err.error?.message || 'Failed to import repository from GitHub. Please verify repository name, branch, or personal access token.');
-        this.isImporting.set(false);
-      }
-    });
+    this.apiService
+      .importGitHubRepo(
+        url,
+        this.importToken().trim() || undefined,
+        this.importBranch().trim() || undefined,
+      )
+      .subscribe({
+        next: (newProj) => {
+          this.projects.update((list) => [newProj, ...list.filter((p) => p.id !== newProj.id)]);
+          this.selectedProjectId.set(newProj.id);
+          this.isImporting.set(false);
+          this.isImportModalOpen.set(false);
+          this.importRepoUrl.set('');
+          this.importToken.set('');
+          this.triggerDeepScan();
+        },
+        error: (err) => {
+          console.error('Import failed', err);
+          this.importError.set(
+            err.error?.message ||
+              'Failed to import repository from GitHub. Please verify repository name, branch, or personal access token.',
+          );
+          this.isImporting.set(false);
+        },
+      });
   }
 
   // Filtered Issues
@@ -410,10 +456,11 @@ export class App implements OnInit {
     const filter = this.selectedSeverityFilter();
     const query = this.searchQuery().toLowerCase().trim();
 
-    return issues.filter(issue => {
+    return issues.filter((issue) => {
       const matchSeverity = filter === 'All' || issue.severity === filter;
-      const matchQuery = !query || 
-        issue.title.toLowerCase().includes(query) || 
+      const matchQuery =
+        !query ||
+        issue.title.toLowerCase().includes(query) ||
         issue.description.toLowerCase().includes(query) ||
         issue.file.toLowerCase().includes(query);
       return matchSeverity && matchQuery;
@@ -450,8 +497,8 @@ export class App implements OnInit {
         primaryBorderColor: '#059669',
         lineColor: '#6366f1',
         secondaryColor: '#1e293b',
-        tertiaryColor: '#0f172a'
-      }
+        tertiaryColor: '#0f172a',
+      },
     });
 
     this.apiService.getSamples().subscribe({
@@ -461,7 +508,7 @@ export class App implements OnInit {
           this.selectedProjectId.set(projs[0].id);
         }
       },
-      error: (err) => console.error('Failed to load sample projects', err)
+      error: (err) => console.error('Failed to load sample projects', err),
     });
   }
 
@@ -469,12 +516,12 @@ export class App implements OnInit {
     this.isLoading.set(true);
 
     // Reset data-rendered so that diagrams for this project will re-render
-    document.querySelectorAll('.mermaid-code').forEach(el => el.removeAttribute('data-rendered'));
+    document.querySelectorAll('.mermaid-code').forEach((el) => el.removeAttribute('data-rendered'));
 
     // 1. High-Level Summary (Image 2)
     this.apiService.getSummary(projectId).subscribe({
       next: (summary) => this.summaryData.set(summary),
-      error: (err) => console.error(err)
+      error: (err) => console.error(err),
     });
 
     // 2. Files List
@@ -485,7 +532,7 @@ export class App implements OnInit {
           this.targetFile.set(files[0]);
         }
       },
-      error: (err) => console.error(err)
+      error: (err) => console.error(err),
     });
 
     // 3. Architecture
@@ -494,13 +541,13 @@ export class App implements OnInit {
         this.architectureData.set(arch);
         setTimeout(() => this.renderMermaidDiagrams(), 150);
       },
-      error: (err) => console.error(err)
+      error: (err) => console.error(err),
     });
 
     // 4. Security & Smells
     this.apiService.getSecuritySmells(projectId).subscribe({
       next: (sec) => this.securityData.set(sec),
-      error: (err) => console.error(err)
+      error: (err) => console.error(err),
     });
 
     // 5. Documentation
@@ -509,7 +556,7 @@ export class App implements OnInit {
         this.docsData.set(docs);
         setTimeout(() => this.renderMermaidDiagrams(), 150);
       },
-      error: (err) => console.error(err)
+      error: (err) => console.error(err),
     });
 
     // 6. Technical Debt
@@ -521,7 +568,7 @@ export class App implements OnInit {
       error: (err) => {
         console.error(err);
         this.isLoading.set(false);
-      }
+      },
     });
   }
 
@@ -557,7 +604,7 @@ export class App implements OnInit {
       error: (err) => {
         console.error('Impact analysis error', err);
         this.isAnalyzingImpact.set(false);
-      }
+      },
     });
   }
 
@@ -566,7 +613,11 @@ export class App implements OnInit {
     let clean = raw.trim();
 
     // Strip markdown code fences if present
-    clean = clean.replace(/^```mermaid\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/, '').trim();
+    clean = clean
+      .replace(/^```mermaid\s*/i, '')
+      .replace(/^```\s*/i, '')
+      .replace(/```\s*$/, '')
+      .trim();
 
     // Ensure header (graph TB/LR, sequenceDiagram) is followed by newline
     clean = clean.replace(/^(graph\s+[A-Za-z]+)\s+([A-Za-z0-9_])/i, '$1\n  $2');
@@ -586,9 +637,12 @@ export class App implements OnInit {
     });
 
     // Sequence diagrams: participant aliases with unquoted parens
-    clean = clean.replace(/participant\s+([A-Za-z0-9_]+)\s+as\s+([^"\n]+?\([^)\n]+?\)[^"\n]*)/g, (_, id, label) => {
-      return `participant ${id} as "${label.trim()}"`;
-    });
+    clean = clean.replace(
+      /participant\s+([A-Za-z0-9_]+)\s+as\s+([^"\n]+?\([^)\n]+?\)[^"\n]*)/g,
+      (_, id, label) => {
+        return `participant ${id} as "${label.trim()}"`;
+      },
+    );
 
     return clean;
   }
@@ -603,12 +657,18 @@ export class App implements OnInit {
 
   sourceLabel(source?: ResultSource): string {
     switch (source) {
-      case 'ai': return 'AI-generated';
-      case 'fallback': return 'Sample fallback - AI unavailable';
-      case 'heuristic': return 'Heuristic estimate - no AI';
-      case 'sample': return 'Built-in sample data';
-      case 'offline': return 'Offline sample - backend unreachable';
-      default: return '';
+      case 'ai':
+        return 'AI-generated';
+      case 'fallback':
+        return 'Sample fallback - AI unavailable';
+      case 'heuristic':
+        return 'Heuristic estimate - no AI';
+      case 'sample':
+        return 'Built-in sample data';
+      case 'offline':
+        return 'Offline sample - backend unreachable';
+      default:
+        return '';
     }
   }
 
@@ -629,7 +689,9 @@ export class App implements OnInit {
       } catch (renderErr) {
         console.warn('Mermaid render issue for diagram:', renderErr);
         // Remove any Mermaid-injected error icons or stray SVG elements from document
-        document.querySelectorAll(`[id^="${id}"], [id^="d${id}"], .error-icon`).forEach(node => node.remove());
+        document
+          .querySelectorAll(`[id^="${id}"], [id^="d${id}"], .error-icon`)
+          .forEach((node) => node.remove());
 
         // Display clean, readable fallback view without scary bomb icons
         el.innerHTML = `
@@ -686,7 +748,7 @@ export class App implements OnInit {
     const cx = 220;
     const cy = 160;
     if (!data || data.length < 8) {
-      return `${cx},80 ${cx+60},105 ${cx+90},160 ${cx+60},215 ${cx},240 ${cx-60},215 ${cx-90},160 ${cx-60},105`;
+      return `${cx},80 ${cx + 60},105 ${cx + 90},160 ${cx + 60},215 ${cx},240 ${cx - 60},215 ${cx - 90},160 ${cx - 60},105`;
     }
 
     const maxVal = 180;
@@ -723,7 +785,13 @@ export class App implements OnInit {
     return pts.join(' ');
   }
 
-  getCategoryLabelPos(idx: number): { x: number; y: number; anchor: string; shortName: string; fullName: string } {
+  getCategoryLabelPos(idx: number): {
+    x: number;
+    y: number;
+    anchor: string;
+    shortName: string;
+    fullName: string;
+  } {
     const cx = 220;
     const cy = 160;
     const r = 115;
@@ -743,7 +811,7 @@ export class App implements OnInit {
       { short: 'Maintainability', full: 'Maintainability & Debt' },
       { short: 'Code Quality', full: 'Code Quality & Style' },
       { short: 'Correctness', full: 'Functional Correctness' },
-      { short: 'Data Integrity', full: 'Data Integrity & Integration' }
+      { short: 'Data Integrity', full: 'Data Integrity & Integration' },
     ];
 
     const item = names[idx % 8];
@@ -782,7 +850,7 @@ export class App implements OnInit {
       code,
       zoom: 1,
       panX: 0,
-      panY: 0
+      panY: 0,
     });
     // Render Mermaid into the fullscreen container
     setTimeout(() => {
@@ -832,7 +900,7 @@ export class App implements OnInit {
     this.fullscreenDiagram.set({
       ...cur,
       panX: this.initialPanX + deltaX,
-      panY: this.initialPanY + deltaY
+      panY: this.initialPanY + deltaY,
     });
   }
 
