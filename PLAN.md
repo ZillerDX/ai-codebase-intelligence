@@ -1,23 +1,26 @@
-# PLAN — Move hosting from GitHub Pages to Cloudflare Pages
+# PLAN — Hosting on Cloudflare Pages (Git integration)
 
-Branch: `chore/cloudflare-pages` (from `main`, local). Previous work (Angular 22 + redesign + real analysis) is merged in PR #1.
+Live: https://codepulse-9dl.pages.dev (project `codepulse`). Branch for this record: `chore/pages-git-deploy`.
 
-## Decisions
-- Cloudflare Pages with **Git integration** (Cloudflare builds; no secrets in GitHub). Setup steps in `docs/DEPLOY.md`.
-- GitHub Pages deploy workflow removed; `frontend-ci.yml` runs contrast check, tests and a production build on PRs and pushes.
-- Served from the site root: default `<base href="/">`, `build:gh-pages` script removed. Hash routing needs no redirect rules.
-- `public/_headers`: security headers and immutable caching for hashed files.
-- No CSP yet (Mermaid and Angular use inline styles; needs testing against real headers).
+## Done
+- [x] Angular 22, redesign and real analysis merged earlier (PR #1, #2, #3).
+- [x] Previous Worker deployment and the `codeplus.dev` zone were removed by the owner; a new Pages project was created through the dashboard and connected to this repository (`main`, auto deploys, preview deployments).
+- [x] First build failed on Node 24.13.1; fixed with `NODE_VERSION=24.15.0`, retried: success, 120 files uploaded.
+- [x] Verified live: cold deep link, real analysis of OWASP/NodeGoat (8 findings), fonts, security and cache headers, 0 console errors.
+- [x] Repo cleaned up: `wrangler.jsonc` and the `deploy` script removed, `.node-version` set to `24.15.0`, docs rewritten.
 
-## Milestones
-- [x] Repo changes merged in PR #2 (CI workflow, `_headers`, docs, Node pin).
-- [x] **Deployed** to Cloudflare as a Worker with static assets: https://codepulse.jodnoi.workers.dev (`wrangler.jsonc`, `npm run deploy`). Checked live: cold deep link, real analysis of OWASP/NodeGoat (8 findings), fonts, security and cache headers, unknown-path fallback, 0 console errors.
-- [ ] Optional: connect the repo in Cloudflare (Settings → Builds) so merges deploy automatically.
-- [ ] Turn off GitHub Pages in repo Settings; update the repo website link to the new URL.
+## Not verified yet
+- Automatic deployment from a push: the first deploy was a manual retry. Merging this PR is the first real test (a new deployment should appear and the check on the PR should come from Cloudflare).
+- `codeplus.dev` is no longer in Cloudflare; attaching a custom domain needs it added again (see docs/DEPLOY.md).
 
 ## Notes
-- `wrangler pages project create` created a Worker named `codepulse` (Cloudflare now maps Pages commands to Workers), so the project shows under Workers & Pages, not as a separate Pages project.
-- Deploys are manual until the Builds connection is set up.
+- The Cloudflare GitHub app was installed with access to all repositories (40). Narrowing it to this repo is recommended (GitHub → Settings → Applications).
+- The repo website link on GitHub still points to the removed Worker URL until it is updated.
+
+## Production checklist
+1. Merge this PR; confirm a new Cloudflare deployment appears for the merge commit and succeeds.
+2. Update the repo website link to https://codepulse-9dl.pages.dev.
+3. Turn off GitHub Pages in repo Settings if not already done.
 
 ## Next
-Merge the PR that records this setup, then decide whether to connect automatic builds (docs/DEPLOY.md).
+Review and merge this PR, then check Cloudflare → codepulse → Deployments for the automatic build.
