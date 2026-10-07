@@ -10,7 +10,9 @@ public class AnalysisControllerTests
 {
     private sealed class ThrowingGemini : IGeminiService
     {
-        public Task<string> GenerateContentAsync(string prompt, string? systemInstruction = null, bool jsonMode = false) => throw new InvalidOperationException("Gemini must not be called");
+        public bool IsConfigured => false;
+        public Task<string> GenerateContentAsync(string prompt, string? systemInstruction = null, bool jsonMode = false, int? maxOutputTokens = null, CancellationToken cancellationToken = default) => throw new InvalidOperationException("Gemini must not be called");
+        public Task<NarrativeResponse> GenerateNarrativeAsync(NarrativeRequest request, CancellationToken cancellationToken = default) => throw new InvalidOperationException("Gemini must not be called");
         public Task<ImpactAnalysisResult> AnalyzeImpactAsync(string targetFile, string proposedChange, string codebaseContext) => throw new InvalidOperationException("Gemini must not be called");
         public Task<ArchitectureOverviewDto> SynthesizeArchitectureAsync(string projectId, string codebaseSummary, List<string> fileList) => throw new InvalidOperationException("Gemini must not be called");
         public Task<SecuritySmellReportDto> AuditSecurityAndSmellsAsync(string projectId, string codebaseSummary) => throw new InvalidOperationException("Gemini must not be called");

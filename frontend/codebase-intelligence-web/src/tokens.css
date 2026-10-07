@@ -1,0 +1,66 @@
+/* Design tokens: "Warm Editorial". Change colours, fonts and spacing here only. */
+:root {
+  /* surfaces */
+  --paper: #faf6ef;
+  --surface: #fffdf9;
+  --surface-2: #f3ede2;
+  --line: #e7dfd1;
+  --line-strong: #d6cbb8;
+  --field-border: #857868;
+
+  /* text */
+  --ink: #2b2118;
+  --ink-2: #6b5e50;
+
+  /* the one accent colour: interactive things only */
+  --accent: #b5472a;
+  --accent-strong: #8f3620;
+  --accent-soft: #f6e3da;
+  --on-accent: #ffffff;
+
+  /* severity (never used for buttons or links) */
+  --critical: #9b1c31;
+  --critical-soft: #f7e1e4;
+  --major: #b7791f;
+  --major-ink: #7a4f0a;
+  --major-soft: #f8ecd2;
+  --minor: #5b6b73;
+  --minor-soft: #e6ecee;
+
+  /* where a result came from */
+  --computed: #3f6b4f;
+  --computed-soft: #e3efe6;
+  --ai: #5a4a8a;
+  --ai-soft: #ebe6f5;
+
+  /* type */
+  --font-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  --font-body: 'Plus Jakarta Sans Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono:
+    'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.5rem;
+  --text-hero: clamp(2.25rem, 5vw, 3.5rem);
+
+  /* spacing: multiples of 4px */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 3rem;
+  --s-8: 4.5rem;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+  --content-width: 1120px;
+  --sidebar-width: 272px;
+
+  --focus: 0 0 0 3px var(--paper), 0 0 0 5px var(--accent);
+}
