@@ -6,7 +6,7 @@ Paste a link to a public GitHub repository and CodePulse reads its real files, t
 [![Frontend CI](https://img.shields.io/github/actions/workflow/status/ZillerDX/ai-codebase-intelligence/frontend-ci.yml?branch=main&label=Frontend%20CI)](https://github.com/ZillerDX/ai-codebase-intelligence/actions/workflows/frontend-ci.yml)
 ![Angular 22](https://img.shields.io/badge/Angular-22-dd0031) ![.NET 10](https://img.shields.io/badge/.NET-10-512bd4) ![License MIT](https://img.shields.io/badge/License-MIT-blue)
 
-**Live app:** https://codepulse.jodnoi.workers.dev (hosted on Cloudflare). Deployment: [docs/DEPLOY.md](docs/DEPLOY.md).
+**Live app:** https://codepulse-9dl.pages.dev (Cloudflare Pages, deployed automatically from `main`). Deployment: [docs/DEPLOY.md](docs/DEPLOY.md).
 
 <p align="center"><img src="docs/screenshots/01-welcome.png" alt="Welcome page with a link field and real example repositories" width="100%"></p>
 

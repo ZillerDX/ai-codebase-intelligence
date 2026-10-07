@@ -23,8 +23,9 @@ Reviews any public GitHub repo from a link, in the browser (Angular 22). Optiona
 - Don't write `\n` in tool-generated files through shell heredocs/python strings; verify escapes (they got turned into real newlines more than once).
 
 ## Hosting
-- Cloudflare (Workers static assets, the successor of Pages) at https://codepulse.jodnoi.workers.dev. Config: `frontend/codebase-intelligence-web/wrangler.jsonc`. Deploy manually: `npm run deploy` (builds, then `npx wrangler deploy`; needs `wrangler login`). `public/_headers` sets headers and caching. See `docs/DEPLOY.md`.
-- GitHub Actions (`frontend-ci.yml`, `backend-ci.yml`) only run checks; nothing deploys on merge yet.
+- Cloudflare Pages (Git integration), project `codepulse`, live at https://codepulse-9dl.pages.dev. Every push to `main` builds and deploys; PRs get preview deployments. Settings: root `frontend/codebase-intelligence-web`, build `npm ci && npm run build`, output `dist/codebase-intelligence-web/browser`, build variable `NODE_VERSION=24.15.0`. See `docs/DEPLOY.md`.
+- Cloudflare's build image resolves `.node-version` `24` to 24.13.1, which Angular 22 rejects (needs 24.15.0+ or 22.22.3+). Keep an exact version in `.node-version` and in `NODE_VERSION`.
+- `public/_headers` sets headers and caching. GitHub Actions (`frontend-ci.yml`, `backend-ci.yml`) only run checks.
 - Served from the site root, so keep `<base href="/">`; do not reintroduce a sub-path build.
 
 ## Environment
