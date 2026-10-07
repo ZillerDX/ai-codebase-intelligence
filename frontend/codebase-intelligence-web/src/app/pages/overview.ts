@@ -167,6 +167,7 @@ import { CoverageNote, PageHeader } from '../ui/page';
     .kpi-value {
       font-family: var(--font-display);
       font-size: var(--text-2xl);
+      font-weight: 700;
       line-height: 1;
       font-variant-numeric: tabular-nums;
     }
