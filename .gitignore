@@ -47,3 +47,6 @@ TestResults/
 
 # Browser automation output
 .playwright-mcp/
+
+# Wrangler local state
+.wrangler/

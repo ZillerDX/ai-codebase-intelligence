@@ -6,7 +6,7 @@ Paste a link to a public GitHub repository and CodePulse reads its real files, t
 [![Frontend CI](https://img.shields.io/github/actions/workflow/status/ZillerDX/ai-codebase-intelligence/frontend-ci.yml?branch=main&label=Frontend%20CI)](https://github.com/ZillerDX/ai-codebase-intelligence/actions/workflows/frontend-ci.yml)
 ![Angular 22](https://img.shields.io/badge/Angular-22-dd0031) ![.NET 10](https://img.shields.io/badge/.NET-10-512bd4) ![License MIT](https://img.shields.io/badge/License-MIT-blue)
 
-**Live app:** hosted on Cloudflare Pages (see the website link in the repository's About box). Deployment steps: [docs/DEPLOY.md](docs/DEPLOY.md).
+**Live app:** https://codepulse.jodnoi.workers.dev (hosted on Cloudflare). Deployment: [docs/DEPLOY.md](docs/DEPLOY.md).
 
 <p align="center"><img src="docs/screenshots/01-welcome.png" alt="Welcome page with a link field and real example repositories" width="100%"></p>
 
@@ -72,7 +72,7 @@ Tests and checks:
 ```bash
 cd frontend/codebase-intelligence-web && npm test -- --watch=false && node scripts/check-contrast.mjs
 cd backend && dotnet test CodebaseIntelligence.Api.Tests
-cd frontend/codebase-intelligence-web && npm run build   # production build (what Cloudflare Pages runs)
+cd frontend/codebase-intelligence-web && npm run build   # production build
 ```
 
 ## Project layout
@@ -89,7 +89,7 @@ frontend/codebase-intelligence-web/
 backend/
   CodebaseIntelligence.Api/        .NET 10 API (AI narrative + status endpoints, legacy endpoints)
   CodebaseIntelligence.Api.Tests/  xUnit tests
-docs/DEPLOY.md             Cloudflare Pages setup
+docs/DEPLOY.md             Cloudflare deployment
 docs/superpowers/specs/     design spec for the redesign
 ```
 

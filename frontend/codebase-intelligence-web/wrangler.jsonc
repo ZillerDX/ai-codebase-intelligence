@@ -1,0 +1,10 @@
+{
+  // Static site served by Cloudflare (Workers static assets). Build first: npm run build
+  "name": "codepulse",
+  "compatibility_date": "2026-10-07",
+  "assets": {
+    "directory": "./dist/codebase-intelligence-web/browser",
+    // The app uses hash routing; unknown paths fall back to index.html, which redirects to the home page.
+    "not_found_handling": "single-page-application"
+  }
+}

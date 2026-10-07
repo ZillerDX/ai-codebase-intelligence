@@ -23,7 +23,8 @@ Reviews any public GitHub repo from a link, in the browser (Angular 22). Optiona
 - Don't write `\n` in tool-generated files through shell heredocs/python strings; verify escapes (they got turned into real newlines more than once).
 
 ## Hosting
-- Cloudflare Pages via Git integration (see `docs/DEPLOY.md`): root `frontend/codebase-intelligence-web`, build `npm ci && npm run build`, output `dist/codebase-intelligence-web/browser`. `public/_headers` sets headers and caching. GitHub Actions (`frontend-ci.yml`, `backend-ci.yml`) only run checks.
+- Cloudflare (Workers static assets, the successor of Pages) at https://codepulse.jodnoi.workers.dev. Config: `frontend/codebase-intelligence-web/wrangler.jsonc`. Deploy manually: `npm run deploy` (builds, then `npx wrangler deploy`; needs `wrangler login`). `public/_headers` sets headers and caching. See `docs/DEPLOY.md`.
+- GitHub Actions (`frontend-ci.yml`, `backend-ci.yml`) only run checks; nothing deploys on merge yet.
 - Served from the site root, so keep `<base href="/">`; do not reintroduce a sub-path build.
 
 ## Environment
