@@ -44,3 +44,6 @@ coverage/
 TestResults/
 *.lcov
 *.clover
+
+# Browser automation output
+.playwright-mcp/

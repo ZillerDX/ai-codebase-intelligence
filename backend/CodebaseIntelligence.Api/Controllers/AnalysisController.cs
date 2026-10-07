@@ -25,6 +25,9 @@ public class AnalysisController : ControllerBase
         _logger = logger;
     }
 
+    private NotFoundObjectResult ProjectNotFound(string projectId) =>
+        NotFound(new { message = $"Project '{projectId}' was not found." });
+
     [HttpGet("samples")]
     public ActionResult<List<CodebaseProject>> GetSamples()
     {
@@ -35,18 +38,21 @@ public class AnalysisController : ControllerBase
     public ActionResult<HighLevelSummaryDto> GetSummary(string projectId)
     {
         var summary = _analyzerService.GetHighLevelSummary(projectId);
+        if (summary is null) return ProjectNotFound(projectId);
         return Ok(summary);
     }
 
     [HttpGet("{projectId}/files")]
     public ActionResult<List<string>> GetFiles(string projectId)
     {
+        if (_analyzerService.GetProject(projectId) is null) return ProjectNotFound(projectId);
         return Ok(_analyzerService.GetFileList(projectId));
     }
 
     [HttpGet("{projectId}/architecture")]
     public async Task<ActionResult<ArchitectureOverviewDto>> GetArchitecture(string projectId)
     {
+        if (_analyzerService.GetProject(projectId) is null) return ProjectNotFound(projectId);
         var context = _analyzerService.GetCodebaseContext(projectId);
         var files = _analyzerService.GetFileList(projectId);
         var result = await _geminiService.SynthesizeArchitectureAsync(projectId, context, files);
@@ -56,9 +62,10 @@ public class AnalysisController : ControllerBase
     [HttpPost("{projectId}/impact")]
     public async Task<ActionResult<ImpactAnalysisResult>> AnalyzeImpact(string projectId, [FromBody] ImpactAnalysisRequest request)
     {
+        if (_analyzerService.GetProject(projectId) is null) return ProjectNotFound(projectId);
         var context = _analyzerService.GetCodebaseContext(projectId);
-        var targetFile = string.IsNullOrWhiteSpace(request.TargetFile) 
-            ? "src/Api/Controllers/CheckoutController.cs" 
+        var targetFile = string.IsNullOrWhiteSpace(request.TargetFile)
+            ? "src/Api/Controllers/CheckoutController.cs"
             : request.TargetFile;
 
         var proposedChange = string.IsNullOrWhiteSpace(request.ProposedChange)
@@ -72,6 +79,7 @@ public class AnalysisController : ControllerBase
     [HttpGet("{projectId}/security-smells")]
     public async Task<ActionResult<SecuritySmellReportDto>> GetSecuritySmells(string projectId)
     {
+        if (_analyzerService.GetProject(projectId) is null) return ProjectNotFound(projectId);
         var context = _analyzerService.GetCodebaseContext(projectId);
         var result = await _geminiService.AuditSecurityAndSmellsAsync(projectId, context);
         return Ok(result);
@@ -80,6 +88,7 @@ public class AnalysisController : ControllerBase
     [HttpGet("{projectId}/docs")]
     public async Task<ActionResult<DocumentationReportDto>> GetDocumentation(string projectId)
     {
+        if (_analyzerService.GetProject(projectId) is null) return ProjectNotFound(projectId);
         var context = _analyzerService.GetCodebaseContext(projectId);
         var result = await _geminiService.GenerateDocumentationAndFlowAsync(projectId, context);
         return Ok(result);
@@ -88,6 +97,7 @@ public class AnalysisController : ControllerBase
     [HttpGet("{projectId}/technical-debt")]
     public async Task<ActionResult<TechnicalDebtReportDto>> GetTechnicalDebt(string projectId)
     {
+        if (_analyzerService.GetProject(projectId) is null) return ProjectNotFound(projectId);
         var context = _analyzerService.GetCodebaseContext(projectId);
         var result = await _geminiService.EvaluateTechnicalDebtAsync(projectId, context);
         return Ok(result);
@@ -103,39 +113,27 @@ public class AnalysisController : ControllerBase
 
         try
         {
-            var project = await _gitHubService.ImportRepositoryAsync(request.RepoUrl, request.PersonalAccessToken, request.Branch);
-            
-            // Extract owner and repo
-            var clean = request.RepoUrl.Trim().TrimEnd('/');
-            if (clean.EndsWith(".git", StringComparison.OrdinalIgnoreCase)) clean = clean[..^4];
-            var parts = clean.Replace("https://github.com/", "").Split('/');
-            var owner = parts[0];
-            var repo = parts.Length > 1 ? parts[1] : parts[0];
-
-            var files = await _gitHubService.GetRepositoryFilesAsync(owner, repo, request.Branch ?? "main", request.PersonalAccessToken);
-            if (files.Count == 0)
-            {
-                files = new List<string>
-                {
-                    "src/Program.cs",
-                    "src/Startup.cs",
-                    "src/Controllers/ApiController.cs",
-                    "src/Services/CoreService.cs",
-                    "src/Models/AggregateRoot.cs",
-                    "README.md",
-                    "Dockerfile"
-                };
-            }
+            var imported = await _gitHubService.ImportRepositoryAsync(request.RepoUrl, request.PersonalAccessToken, request.Branch);
+            var project = imported.Project;
+            var files = imported.Files;
 
             var context = $"Project: {project.Name}\nDescription: {project.Description}\nPrimary Language: {string.Join(", ", project.Languages)}\nFiles Sample:\n{string.Join("\n", files.Take(50))}";
             _analyzerService.RegisterProject(project, files, context);
 
             return Ok(project);
         }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to import GitHub repository: {RepoUrl}", request.RepoUrl);
-            return StatusCode(500, new { message = $"Failed to import GitHub repository: {ex.Message}" });
+            return StatusCode(500, new { message = "Failed to import GitHub repository." });
         }
     }
 
