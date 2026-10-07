@@ -5,7 +5,7 @@ import { routes } from './app.routes';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    // Hash URLs (/#/r/owner/repo) keep deep links and refresh working on GitHub Pages without a server fallback.
+    // Hash URLs (/#/r/owner/repo) keep deep links and refresh working on any static host without redirect rules.
     provideRouter(routes, withHashLocation(), withComponentInputBinding()),
   ],
 };
