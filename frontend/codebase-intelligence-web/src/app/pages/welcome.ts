@@ -289,6 +289,26 @@ interface Sample {
       flex-direction: column;
       gap: var(--s-3);
     }
+    .samples .card {
+      transition:
+        transform 160ms ease,
+        box-shadow 160ms ease,
+        border-color 160ms ease;
+    }
+    @media (hover: hover) {
+      .samples .card:hover {
+        transform: translateY(-3px);
+        border-color: var(--line-strong);
+        box-shadow: 0 8px 20px rgb(43 33 24 / 0.1);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .samples .card,
+      .samples .card:hover {
+        transition: none;
+        transform: none;
+      }
+    }
     .samples .repo {
       color: var(--ink-2);
       margin-top: auto;
