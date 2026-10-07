@@ -172,7 +172,7 @@ CLAUDE.md                     working notes for AI assistants (commands, convent
 PLAN.md                       current plan, status and next step
 ```
 
-**Design:** "Warm Editorial": paper background, one terracotta accent used only for interactive elements, severity colours kept separate, Fraunces for headings, Plus Jakarta Sans for text and JetBrains Mono for code (self-hosted with `@fontsource`). Colour pairs are checked against WCAG AA by `scripts/check-contrast.mjs`, severity and result source are never conveyed by colour alone, and the interface is built to be usable with the keyboard.
+**Design:** "Warm Editorial": paper background, one terracotta accent used only for interactive elements, severity colours kept separate, Plus Jakarta Sans for headings and text and JetBrains Mono for code (self-hosted with `@fontsource`). Colour pairs are checked against WCAG AA by `scripts/check-contrast.mjs`, severity and result source are never conveyed by colour alone, and the interface is built to be usable with the keyboard.
 
 ## Troubleshooting
 

@@ -7,7 +7,7 @@ A portfolio-grade tool: a first-time visitor pastes a GitHub link (or clicks a s
 
 ## Decisions (agreed)
 - Primary use: showcase / demo (portfolio). UI language: English, plain wording.
-- Look: Warm Editorial. Paper `#FAF6EF`, ink `#2B2118`, one accent terracotta `#B5472A`; severity colours separate from accent. Fonts: Fraunces (headings, big numbers), Plus Jakarta Sans (UI), JetBrains Mono (paths, code). Fonts self-hosted via `@fontsource-variable/*`.
+- Look: Warm Editorial. Paper `#FAF6EF`, ink `#2B2118`, one accent terracotta `#B5472A`; severity colours separate from accent. Fonts: Plus Jakarta Sans (headings, numbers, UI; replaced Fraunces after its odd letterforms hurt readability), JetBrains Mono (paths, code). Fonts self-hosted via `@fontsource-variable/*`.
 - Navigation: left sidebar with 3 groups (Understand / Check health / Try it), welcome page before any repo is chosen, one URL per page.
 - Structure: standalone components, signals, lazy routes, design tokens in one CSS file, no UI library, no chart library.
 - Order: Angular 22 upgrade first (done, `chore/angular-22`), then redesign (`feat/redesign-ui`).

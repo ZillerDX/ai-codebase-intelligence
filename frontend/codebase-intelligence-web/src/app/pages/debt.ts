@@ -57,7 +57,7 @@ import { CoverageNote, PageHeader } from '../ui/page';
                   <tr>
                     <th scope="row">{{ p.label }}</th>
                     <td class="muted">{{ p.detail }}</td>
-                    <td class="r num">{{ p.penalty === 0 ? '0' : '−' + p.penalty }}</td>
+                    <td class="r pts">{{ p.penalty === 0 ? '0' : '−' + p.penalty }}</td>
                   </tr>
                 }
               </tbody>
@@ -122,7 +122,8 @@ import { CoverageNote, PageHeader } from '../ui/page';
     }
     .num {
       font-family: var(--font-display);
-      font-size: 4.5rem;
+      font-size: 3.5rem;
+      font-weight: 700;
       line-height: 1;
       font-variant-numeric: tabular-nums;
     }
@@ -169,11 +170,10 @@ import { CoverageNote, PageHeader } from '../ui/page';
     .r {
       text-align: right;
     }
-    .num {
+    td.pts {
       font-variant-numeric: tabular-nums;
-    }
-    td.num {
       font-weight: 700;
+      white-space: nowrap;
     }
     .targets,
     .road {

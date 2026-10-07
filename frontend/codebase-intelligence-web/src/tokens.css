@@ -34,8 +34,8 @@
   --ai-soft: #ebe6f5;
 
   /* type */
-  --font-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
   --font-body: 'Plus Jakarta Sans Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: var(--font-body);
   --font-mono:
     'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 
@@ -44,8 +44,8 @@
   --text-md: 1rem;
   --text-lg: 1.25rem;
   --text-xl: 1.75rem;
-  --text-2xl: 2.5rem;
-  --text-hero: clamp(2.25rem, 5vw, 3.5rem);
+  --text-2xl: 2rem;
+  --text-hero: clamp(2rem, 4.5vw, 3rem);
 
   /* spacing: multiples of 4px */
   --s-1: 0.25rem;

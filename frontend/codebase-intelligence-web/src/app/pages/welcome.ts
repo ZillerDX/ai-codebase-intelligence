@@ -114,8 +114,9 @@ interface Sample {
                   <span class="chip">{{ t }}</span>
                 }
               </p>
+              <p class="repo mono">{{ s.repo }}</p>
               <button type="button" class="btn btn-ghost" (click)="open(s.repo)">
-                Analyze {{ s.repo }}
+                Analyze this repo
               </button>
             </li>
           }
@@ -284,9 +285,16 @@ interface Sample {
       gap: var(--s-4);
     }
     .samples .card {
-      display: grid;
+      display: flex;
+      flex-direction: column;
       gap: var(--s-3);
-      align-content: start;
+    }
+    .samples .repo {
+      color: var(--ink-2);
+      margin-top: auto;
+    }
+    .samples .btn {
+      width: 100%;
     }
     .tags {
       display: flex;

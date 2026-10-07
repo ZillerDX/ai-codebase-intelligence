@@ -82,7 +82,7 @@ export function buildDebt(facts: RepoFacts): DebtReport {
     {
       label: 'Large files',
       penalty: Math.min(15, large.length * 2),
-      detail: `${large.length} files over 800 lines × 2 points (max 15)`,
+      detail: `${large.length} ${large.length === 1 ? 'file' : 'files'} over 800 lines × 2 points (max 15)`,
     },
     {
       label: 'TODO / FIXME density',
@@ -97,7 +97,9 @@ export function buildDebt(facts: RepoFacts): DebtReport {
     {
       label: 'CI configuration',
       penalty: facts.hasCi ? 0 : 5,
-      detail: facts.hasCi ? 'CI configuration found' : 'No workflow or pipeline file detected (5 points)',
+      detail: facts.hasCi
+        ? 'CI configuration found'
+        : 'No workflow or pipeline file detected (5 points)',
     },
   ];
   const total = penalties.reduce((sum, p) => sum + p.penalty, 0);
@@ -181,9 +183,15 @@ export function buildTakeaway(facts: RepoFacts, debt: DebtReport): string {
   if (sev.major) parts.push(plural(sev.major, 'major issue'));
   if (sev.minor && parts.length === 0) parts.push(plural(sev.minor, 'minor issue'));
 
-  let found = parts.length > 0 ? `found ${parts.join(' and ')}` : 'found no rule-based security or quality issues';
+  let found =
+    parts.length > 0
+      ? `found ${parts.join(' and ')}`
+      : 'found no rule-based security or quality issues';
   if (largeFiles > 0) {
-    found += parts.length > 0 ? `, plus ${plural(largeFiles, 'very large file')}` : `, but ${plural(largeFiles, 'file')} that ${largeFiles === 1 ? 'is' : 'are'} very large`;
+    found +=
+      parts.length > 0
+        ? `, plus ${plural(largeFiles, 'very large file')}`
+        : `, but ${plural(largeFiles, 'file')} that ${largeFiles === 1 ? 'is' : 'are'} very large`;
   }
   return `We read ${scanned} of ${plural(facts.codeFileCount, 'source file')} and ${found}. Technical-debt score: ${debt.score}/100 (${debt.grade}).`;
 }
@@ -450,7 +458,9 @@ function buildMermaid(components: ArchComponent[], edgeCounts: Map<string, numbe
   if (components.length === 0) return '';
   const lines = ['graph LR'];
   for (const c of components) {
-    lines.push(`  ${c.id}["${sanitizeLabel(c.name)}<br/>${sanitizeLabel(c.layer)} - ${c.fileCount} files"]:::${LAYER_CLASS[c.layer] ?? 'other'}`);
+    lines.push(
+      `  ${c.id}["${sanitizeLabel(c.name)}<br/>${sanitizeLabel(c.layer)} - ${c.fileCount} files"]:::${LAYER_CLASS[c.layer] ?? 'other'}`,
+    );
   }
   const idByName = new Map(components.map((c) => [c.name, c.id]));
   const edges = [...edgeCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 14);
@@ -708,9 +718,13 @@ export function buildImpact(facts: RepoFacts, target: string): ImpactReport {
         : dependents.length <= 10
           ? 'high'
           : 'critical';
-  const reasons: string[] = [`${plural(dependents.length, 'file')} directly ${dependents.length === 1 ? 'mentions' : 'mention'} ${name}.`];
+  const reasons: string[] = [
+    `${plural(dependents.length, 'file')} directly ${dependents.length === 1 ? 'mentions' : 'mention'} ${name}.`,
+  ];
   if (indirect.length > 0)
-    reasons.push(`${plural(indirect.length, 'more file')} ${indirect.length === 1 ? 'depends' : 'depend'} on those files.`);
+    reasons.push(
+      `${plural(indirect.length, 'more file')} ${indirect.length === 1 ? 'depends' : 'depend'} on those files.`,
+    );
   if (ENTRY_LIKE.test(clean)) {
     risk = bump(risk);
     reasons.push(
@@ -719,7 +733,10 @@ export function buildImpact(facts: RepoFacts, target: string): ImpactReport {
   }
   if (tests.length === 0)
     reasons.push('No scanned test file mentions it, so changes may not be covered by tests.');
-  else reasons.push(`${plural(tests.length, 'test file')} ${tests.length === 1 ? 'mentions' : 'mention'} it and should be re-run.`);
+  else
+    reasons.push(
+      `${plural(tests.length, 'test file')} ${tests.length === 1 ? 'mentions' : 'mention'} it and should be re-run.`,
+    );
 
   return {
     target: clean,
