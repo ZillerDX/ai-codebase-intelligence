@@ -4,11 +4,12 @@ import { fileUrl } from '../core/format';
 import { buildDebt } from '../core/reports';
 import { AiCommentary } from '../ui/ai-commentary';
 import { SourceBadge } from '../ui/badges';
+import { CountUp } from '../ui/count-up';
 import { CoverageNote, PageHeader } from '../ui/page';
 
 @Component({
   selector: 'app-debt',
-  imports: [PageHeader, SourceBadge, CoverageNote, AiCommentary],
+  imports: [CountUp, PageHeader, SourceBadge, CoverageNote, AiCommentary],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (facts(); as f) {
@@ -24,7 +25,7 @@ import { CoverageNote, PageHeader } from '../ui/page';
         <section class="score card" aria-labelledby="score-title">
           <div class="big" [attr.data-grade]="r.grade">
             <p class="num" aria-label="Score {{ r.score }} out of 100">
-              {{ r.score }}<span class="of">/100</span>
+              <app-count-up [value]="r.score" /><span class="of">/100</span>
             </p>
             <p class="grade" id="score-title">{{ r.grade }}</p>
           </div>

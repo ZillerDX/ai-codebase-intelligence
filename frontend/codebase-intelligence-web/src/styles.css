@@ -107,7 +107,22 @@ code,
   font: 600 var(--text-sm) / 1 var(--font-body);
   cursor: pointer;
   text-decoration: none;
-  transition: background-color 120ms ease;
+  transition:
+    background-color 120ms ease,
+    transform 120ms ease,
+    box-shadow 160ms ease;
+}
+
+@media (hover: hover) {
+  .btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgb(43 33 24 / 0.12);
+  }
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+  box-shadow: none;
 }
 
 .btn-primary {
@@ -245,6 +260,16 @@ td {
   .bar span {
     transition: none;
   }
+
+  .btn:hover:not(:disabled),
+  .btn:active:not(:disabled) {
+    transform: none;
+  }
+
+  .content > :not(router-outlet),
+  .rise {
+    animation: none;
+  }
 }
 
 /* Long file paths must wrap instead of widening the page on small screens. */
@@ -267,4 +292,61 @@ h1,
 h2,
 h3 {
   overflow-wrap: anywhere;
+}
+
+/* Slim scrollbars that match the paper theme. Chrome and Safari use the webkit rules, Firefox the standard ones. */
+@supports selector(::-webkit-scrollbar) {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--line-strong);
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--ink-2);
+    background-clip: padding-box;
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background: var(--accent);
+    background-clip: padding-box;
+  }
+
+  ::-webkit-scrollbar-button {
+    display: none;
+  }
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+  }
+}
+
+/* Motion: pages fade up on arrival, groups of cards rise one after another. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.content > :not(router-outlet) {
+  animation: rise 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.rise {
+  animation: rise 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
 }

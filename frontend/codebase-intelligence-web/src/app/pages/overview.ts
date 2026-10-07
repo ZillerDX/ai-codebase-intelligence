@@ -5,11 +5,12 @@ import { formatCompact, formatNumber, relativeTime } from '../core/format';
 import { buildOverview } from '../core/reports';
 import { SourceBadge } from '../ui/badges';
 import { Bars, BarItem, LanguageBar } from '../ui/charts';
+import { CountUp } from '../ui/count-up';
 import { CoverageNote, PageHeader } from '../ui/page';
 
 @Component({
   selector: 'app-overview',
-  imports: [RouterLink, PageHeader, SourceBadge, Bars, LanguageBar, CoverageNote],
+  imports: [RouterLink, CountUp, PageHeader, SourceBadge, Bars, LanguageBar, CoverageNote],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (facts(); as f) {
@@ -38,10 +39,14 @@ import { CoverageNote, PageHeader } from '../ui/page';
         </section>
 
         <section class="kpis" aria-label="Key numbers">
-          @for (k of r.kpis; track k.label) {
-            <div class="kpi card" [attr.title]="k.hint">
+          @for (k of r.kpis; track k.label; let i = $index) {
+            <div class="kpi card rise" [style.--i]="i" [attr.title]="k.hint">
               <p class="kpi-value">
-                {{ k.value === null ? 'n/a' : compact(k.value) }}
+                @if (k.value === null) {
+                  n/a
+                } @else {
+                  <app-count-up [value]="k.value" [format]="compact" />
+                }
                 @if (k.estimated) {
                   <span class="est" title="Estimated">≈</span>
                 }

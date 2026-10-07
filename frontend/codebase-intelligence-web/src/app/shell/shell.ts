@@ -3,11 +3,15 @@ import {
   Component,
   computed,
   effect,
+  ElementRef,
   inject,
   input,
   signal,
+  viewChild,
 } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import { AnalysisService } from '../core/analysis.service';
 import { relativeTime } from '../core/format';
 import { parseRepoInput, RepoInputError, validateBranch } from '../core/repo-input';
@@ -70,7 +74,15 @@ const STEP_LABELS = [
               }
             </section>
 
-            <nav aria-label="Report sections">
+            <nav aria-label="Report sections" #nav>
+              <span
+                class="pill"
+                aria-hidden="true"
+                [class.animated]="pillAnimated()"
+                [style.height.px]="pill()?.h ?? 0"
+                [style.transform]="'translateY(' + (pill()?.y ?? 0) + 'px)'"
+                [style.opacity]="pill() ? 1 : 0"
+              ></span>
               @for (group of groups; track group.title) {
                 <div class="group">
                   <p class="eyebrow">{{ group.title }}</p>
@@ -163,7 +175,15 @@ const STEP_LABELS = [
       height: 100vh;
       overflow-y: auto;
       padding: var(--s-5);
-      background: var(--surface);
+      /* Soft shadows at the top and bottom edge appear only while there is more to scroll. */
+      background:
+        linear-gradient(var(--surface) 30%, transparent) top / 100% 24px no-repeat local,
+        linear-gradient(transparent, var(--surface) 70%) bottom / 100% 24px no-repeat local,
+        radial-gradient(farthest-side at 50% 0, rgb(43 33 24 / 0.16), transparent) top / 100% 10px
+          no-repeat scroll,
+        radial-gradient(farthest-side at 50% 100%, rgb(43 33 24 / 0.16), transparent) bottom / 100%
+          10px no-repeat scroll;
+      background-color: var(--surface);
       border-right: 1px solid var(--line);
       display: flex;
       flex-direction: column;
@@ -206,6 +226,37 @@ const STEP_LABELS = [
     nav {
       display: grid;
       gap: var(--s-5);
+      position: relative;
+    }
+    .pill {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      border-radius: var(--radius-sm);
+      background: var(--accent-soft);
+      pointer-events: none;
+    }
+    .pill::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      border-radius: 3px 0 0 3px;
+      background: var(--accent);
+    }
+    .pill.animated {
+      transition:
+        transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+        height 280ms cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 160ms ease;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .pill.animated {
+        transition: none;
+      }
     }
     .group ul {
       list-style: none;
@@ -221,14 +272,19 @@ const STEP_LABELS = [
       text-decoration: none;
       color: var(--ink);
       border-left: 3px solid transparent;
+      position: relative;
+      transition:
+        background-color 140ms ease,
+        padding-left 160ms ease;
     }
     nav a:hover {
       background: var(--surface-2);
       color: var(--ink);
+      padding-left: calc(var(--s-3) + 2px);
     }
-    nav a.active {
-      background: var(--accent-soft);
-      border-left-color: var(--accent);
+    nav a.active,
+    nav a.active:hover {
+      background: transparent;
     }
     nav a.active .label {
       color: var(--accent-strong);
@@ -315,7 +371,8 @@ const STEP_LABELS = [
         top: 0;
         z-index: 5;
       }
-      .desktop-only {
+      .desktop-only,
+      .pill {
         display: none;
       }
       .sidebar {
@@ -336,12 +393,16 @@ const STEP_LABELS = [
 })
 export class Shell {
   private readonly analysis = inject(AnalysisService);
+  private readonly router = inject(Router);
+  private readonly nav = viewChild<ElementRef<HTMLElement>>('nav');
 
   readonly owner = input.required<string>();
   readonly repo = input.required<string>();
   readonly branch = input<string | undefined>(undefined);
 
   protected readonly navOpen = signal(false);
+  protected readonly pill = signal<{ y: number; h: number } | null>(null);
+  protected readonly pillAnimated = signal(false);
   protected readonly state = this.analysis.state;
   protected readonly facts = this.analysis.facts;
   protected readonly stepLabels = STEP_LABELS;
@@ -384,11 +445,39 @@ export class Shell {
     return f ? relativeTime(f.analyzedAt) : '';
   });
   constructor() {
+    this.router.events
+      .pipe(
+        filter((e) => e instanceof NavigationEnd),
+        takeUntilDestroyed(),
+      )
+      .subscribe(() => this.placePill());
+    effect(() => {
+      // Place the indicator when the menu first appears or the mobile menu opens.
+      this.nav();
+      this.navOpen();
+      this.placePill();
+    });
     effect(() => {
       const owner = this.owner();
       const repo = this.repo();
       const branch = this.branch();
       void this.start(owner, repo, branch, false);
+    });
+  }
+
+  /** Moves the sliding highlight behind the active menu link once the router has marked it. */
+  private placePill(): void {
+    if (typeof requestAnimationFrame !== 'function') return;
+    requestAnimationFrame(() => {
+      const nav = this.nav()?.nativeElement;
+      const active = nav?.querySelector<HTMLElement>('a.active');
+      if (!active || active.offsetHeight === 0) {
+        this.pill.set(null);
+        return;
+      }
+      this.pill.set({ y: active.offsetTop, h: active.offsetHeight });
+      // Skip the transition for the first placement so it does not slide in from the top.
+      requestAnimationFrame(() => this.pillAnimated.set(true));
     });
   }
 
